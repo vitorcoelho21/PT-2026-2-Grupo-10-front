@@ -1,21 +1,30 @@
 
 
-export interface CadastroPayload{
+export interface CadastroFormato{
 
     username : string;
-    some: string;
+    nome: string;
     email: string;
     senhaHash: string;
     fotoPerfilUrl?: string;
 
 }
 
-export interface LoginPayload{
+export interface LoginFormato{
 
     email: string;
     senhaHash: string;
 
 
+
+
+}
+
+export interface updateFormato{
+
+    username?: string;
+    nome?: string;
+    fotoPerfilUrl?: string;
 
 
 }
