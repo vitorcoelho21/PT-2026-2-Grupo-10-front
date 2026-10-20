@@ -11,12 +11,12 @@ export default function Home() {
     try {
       console.log('A enviar pedido para o backend...');
       
-      // Usamos dados fixos que respeitam a sua interface CadastroFormato
+      
       const resposta = await registerUser({
         username: 'outro_teste',
         nome: 'outro Mendes',
         email: 'outro.teste@email.com',
-        senhaHash: '123456789' // Lembre-se que o hash real será feito noutro local, aqui é só para teste
+        senhaHash: '123456789'
       });
       
       console.log('Sucesso! Resposta do backend:', resposta);

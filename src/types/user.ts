@@ -15,16 +15,4 @@ export interface LoginFormato{
     email: string;
     senhaHash: string;
 
-
-
-
-}
-
-export interface updateFormato{
-
-    username?: string;
-    nome?: string;
-    fotoPerfilUrl?: string;
-
-
 }

@@ -1,5 +1,4 @@
 import { CadastroFormato } from '@/types/user';
-import { updateFormato } from '@/types/user';
 import api from './api';
 
 // 1. Cadastro
@@ -13,6 +12,8 @@ export const registerUser = async (data: CadastroFormato) => {
   }
 };
 
+
+/*
 // 2. Buscar todos os usuários
 export const getAllUsers = async () => {
   const response = await api.get('/user');
@@ -36,3 +37,4 @@ export const deleteUser = async (id: string) => {
   const response = await api.delete(`/user/${id}`);
   return response.data;
 };
+*/
