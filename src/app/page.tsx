@@ -13,9 +13,9 @@ export default function Home() {
       
       
       const resposta = await registerUser({
-        username: 'outro_teste',
-        nome: 'outro Mendes',
-        email: 'outro.teste@email.com',
+        username: 'outro3_teste',
+        nome: 'outro2 Mendes',
+        email: 'outro2.teste@email.com',
         senhaHash: '123456789'
       });
       
@@ -28,6 +28,24 @@ export default function Home() {
     }
   };
 
+  const handleTestLogin = async () => {
+
+    const credenciais = {
+    email: "giulia.ferreira@email.com", 
+    senhaHash: "123456789"
+  };
+
+  try {
+    const response = await api.post('/auth/login', credenciais);
+    
+    console.log("Sucesso! Aqui está o Token JWT:", response.data);
+    alert("Login efetuado com sucesso!");
+  } catch (error: any) {
+    console.error("Erro ao fazer login:", error.response?.data || error);
+    alert("Erro no login.");
+  }
+};
+
   return (
     <div style={{ padding: '50px', textAlign: 'center' }}>
       <h1>Teste de Integração</h1>
@@ -37,6 +55,19 @@ export default function Home() {
       >
         Testar Cadastro de Utilizador
       </button>
+
+
+      <button 
+      onClick={handleTestLogin} 
+      style={{ padding: '10px 20px', backgroundColor: '#10b981', color: '#fff', marginTop: '20px', borderRadius: '5px' }}
+    >
+    Testar Login de Utilizador
+      </button>
+
     </div>
+    
+
+
+    
   );
 }
