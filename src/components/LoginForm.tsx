@@ -4,9 +4,11 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import {login }from"@/services/authService";
+
 import AuthLayout from "@/components/AuthLayout";
 import Input from "@/components/Input";
-import { login } from "@/utils/auth";
+//import { login } from "@/utils/auth";
 
 export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: boolean }) {
   const router = useRouter();
@@ -19,15 +21,25 @@ export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: bo
     e.preventDefault();
 
     const newErrors: Record<string, string> = {};
-    if (!email.trim()) newErrors.email = "Informe seu email.";
-    if (!senha) newErrors.senha = "Informe sua senha.";
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
+  if (!email.trim()) {
+  newErrors.email = "Informe o seu email.";
+  } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+  newErrors.email = "Email inválido. Use o formato correto.";
+  }
+
+  if (!senha) {
+  newErrors.senha = "Informe a sua senha.";
+  } else if (senha.length < 6) {
+  newErrors.senha = "A senha tem de ter no mínimo 6 caracteres.";
+  }
+
+  setErrors(newErrors);
+  if (Object.keys(newErrors).length > 0) return;
 
     setLoading(true);
     try {
-      await login(email, senha);
+      await login({email, senhaHash: senha});
       router.push("/");
     } catch (err) {
       setErrors({ geral: (err as Error).message });
