@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 
 import AuthLayout from "@/components/AuthLayout";
 import Input from "@/components/Input";
-import { cadastrar } from "@/utils/auth";
+
+import { registerUser } from "@/services/userService";
+
+//import { cadastrar } from "@/utils/auth";
 
 export default function CadastroForm() {
   const router = useRouter();
@@ -33,10 +36,15 @@ export default function CadastroForm() {
     if (!form.email.trim()) {
       newErrors.email = "Informe seu email.";
     } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-      newErrors.email = "Email inválido.";
+      newErrors.email = "Email inválido. Use o formato correto (ex: nome@email.com).";
     }
 
-    if (!form.senha) newErrors.senha = "Crie uma senha.";
+
+    if (!form.senha) {
+      newErrors.senha = "Crie uma senha.";
+    } else if (form.senha.length < 6) {
+      newErrors.senha = "A senha deve ter no mínimo 6 caracteres.";
+    }
 
     if (!form.confirmarSenha) {
       newErrors.confirmarSenha = "Confirme sua senha.";
@@ -56,11 +64,11 @@ export default function CadastroForm() {
 
     setLoading(true);
     try {
-      await cadastrar({
+      await registerUser({
         nome: form.nome,
         username: form.username,
         email: form.email,
-        senha: form.senha,
+        senhaHash: form.senha,
       });
       router.push("/login?cadastro=sucesso");
     } catch (err) {

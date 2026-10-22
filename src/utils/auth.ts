@@ -1,5 +1,5 @@
 // Mock: salva usuários no localStorage até existir um back-end
-type Usuario = { nome: string; username: string; email: string; senha: string };
+/*type Usuario = { nome: string; username: string; email: string; senha: string };
 
 function getUsers(): Usuario[] {
   return JSON.parse(localStorage.getItem("users") || "[]");
@@ -16,3 +16,4 @@ export async function login(email: string, senha: string) {
     throw new Error("Email ou senha incorretos.");
   }
 }
+*/
