@@ -6,10 +6,7 @@ import { useRouter } from "next/navigation";
 
 import AuthLayout from "@/components/AuthLayout";
 import Input from "@/components/Input";
-
 import { registerUser } from "@/services/userService";
-
-//import { cadastrar } from "@/utils/auth";
 
 export default function CadastroForm() {
   const router = useRouter();
@@ -38,7 +35,6 @@ export default function CadastroForm() {
     } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
       newErrors.email = "Email inválido. Use o formato correto (ex: nome@email.com).";
     }
-
 
     if (!form.senha) {
       newErrors.senha = "Crie uma senha.";
@@ -71,8 +67,21 @@ export default function CadastroForm() {
         senhaHash: form.senha,
       });
       router.push("/login?cadastro=sucesso");
-    } catch (err) {
-      setErrors({ geral: (err as Error).message });
+    } catch (err: any) {
+      if (err.response) {
+        const status = err.response.status;
+        const mensagemBack = err.response.data?.message;
+
+        if (status === 409) {
+          setErrors({ geral: mensagemBack || "Este email ou nome de usuário já está em uso." });
+        } else if (status === 400) {
+          setErrors({ geral: Array.isArray(mensagemBack) ? mensagemBack[0] : (mensagemBack || "Dados inválidos.") });
+        } else {
+          setErrors({ geral: mensagemBack || "Ocorreu um erro no servidor ao criar a conta." });
+        }
+      } else {
+        setErrors({ geral: "Erro de conexão. Tente novamente." });
+      }
     } finally {
       setLoading(false);
     }
