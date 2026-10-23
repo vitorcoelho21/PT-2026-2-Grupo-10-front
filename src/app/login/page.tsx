@@ -7,7 +7,15 @@ export const metadata: Metadata = {
 };
 
 export default async function Login({ searchParams }: PageProps<"/login">) {
-  const { cadastro } = await searchParams;
+  // Lê os parâmetros da URL:
+  //   /login?cadastro=sucesso =  veio da tela de cadastro
+  //   /login?senha=redefinida  = veio da tela de nova senha
+  const { cadastro, senha } = await searchParams;
 
-  return <LoginForm cadastroRealizado={cadastro === "sucesso"} />;
+  return (
+    <LoginForm
+      cadastroRealizado={cadastro === "sucesso"}
+      senhaRedefinida={senha === "redefinida"}
+    />
+  );
 }
