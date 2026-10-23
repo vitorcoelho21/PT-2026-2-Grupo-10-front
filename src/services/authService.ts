@@ -1,21 +1,23 @@
-import { LoginFormato } from '@/types/user';
-import api from './api';
+import { LoginFormato } from "@/types/user";
+import api from "./api";
+import { clearToken, setToken } from "@/utils/token";
 
 
 
 export const login = async (credentials: LoginFormato) => {
-  try {
-    // Faz o pedido POST para a rota de login do backend
-    const response = await api.post('/auth/login', credentials);
-    console.log('Token recebido do backend:', response.data);
+  const { data } = await api.post<{ access_token: string }>("/auth/login", credentials);
+  setToken(data.access_token);
+  return data;
+};
 
-    
-    // o backend devolve o token JWT e os dados do utilizador aqui
-    return response.data;
+export const logout = () => clearToken();
 
-  }
-    catch (error: any) {
-    console.error('Erro:', error.response?.data || error);
-    throw error;
-  }
+export const forgotPassword = async (email: string) => {
+  const { data } = await api.post<{ message: string }>("/auth/forgot-password", { email });
+  return data;
+};
+
+export const resetPassword = async (token: string, novaSenha: string) => {
+  const { data } = await api.post<{ message: string }>("/auth/reset-password", { token, novaSenha });
+  return data;
 };
