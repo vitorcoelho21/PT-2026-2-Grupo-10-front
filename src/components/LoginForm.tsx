@@ -9,7 +9,14 @@ import { login } from "@/services/authService";
 import AuthLayout from "@/components/AuthLayout";
 import Input from "@/components/Input";
 
-export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: boolean }) {
+// "senhaRedefinida" indica que o usuário acabou de trocar a senha (veio de /redefinir-senha)
+export default function LoginForm({
+  cadastroRealizado,
+  senhaRedefinida,
+}: {
+  cadastroRealizado: boolean;
+  senhaRedefinida: boolean;
+}) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -29,8 +36,6 @@ export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: bo
 
     if (!senha) {
       newErrors.senha = "Informe a sua senha.";
-    } else if (senha.length < 6) {
-      newErrors.senha = "A senha tem de ter no mínimo 6 caracteres.";
     }
 
     setErrors(newErrors);
@@ -39,7 +44,8 @@ export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: bo
     setLoading(true);
     try {
       await login({ email, senhaHash: senha });
-      router.push("/");
+      //  antes ia para "/", que redireciona de volta ao /login, agora vai pra /home
+      router.push("/home");
     } catch (err: any) {
       if (err.response) {
         const status = err.response.status;
@@ -48,9 +54,15 @@ export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: bo
           setErrors({ geral: "Email ou senha incorretos." });
         } else if (status === 409) {
           setErrors({ geral: "Este email já está cadastrado." });
+        } else if (status === 429) {
+          // limite de tentativas do back-end (3)
+          setErrors({ geral: "Muitas tentativas seguidas. Aguarde um minuto e tente de novo." });
         } else {
+          // o back-end pode mandar "message" como LISTA de erros, só aparece o primeiro;
           const mensagemBack = err.response.data?.message;
-          setErrors({ geral: mensagemBack || "Ocorreu um erro no servidor." });
+          setErrors({
+            geral: (Array.isArray(mensagemBack) ? mensagemBack[0] : mensagemBack) || "Ocorreu um erro no servidor.",
+          });
         }
       } else {
         setErrors({ geral: "Erro de conexão. Tente novamente." });
@@ -66,6 +78,13 @@ export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: bo
         {cadastroRealizado && !errors.geral && (
           <p className="rounded-xl bg-[#1C3A28] px-4 py-2 text-center text-sm text-green-300">
             Conta criada com sucesso! Faça login para continuar.
+          </p>
+        )}
+
+        {/* o aviso exibido depois de redefinir a senha */}
+        {senhaRedefinida && !errors.geral && (
+          <p className="rounded-xl bg-[#1C3A28] px-4 py-2 text-center text-sm text-green-300">
+            Senha redefinida com sucesso! Entre com a nova senha.
           </p>
         )}
 
@@ -93,8 +112,8 @@ export default function LoginForm({ cadastroRealizado }: { cadastroRealizado: bo
           error={errors.senha}
         />
 
-        {/* TODO: recuperação de senha (ciclo 4) */}
-        <Link href="#" className="self-center text-xs text-white underline hover:text-gray-300">
+        {/* Mudei: o link agora leva à tela de recuperação de senha */}
+        <Link href="/esqueci-senha" className="self-center text-xs text-white underline hover:text-gray-300">
           Esqueceu sua senha?
         </Link>
 
