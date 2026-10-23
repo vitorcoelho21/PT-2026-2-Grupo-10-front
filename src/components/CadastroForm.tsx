@@ -38,8 +38,10 @@ export default function CadastroForm() {
 
     if (!form.senha) {
       newErrors.senha = "Crie uma senha.";
-    } else if (form.senha.length < 6) {
-      newErrors.senha = "A senha deve ter no mínimo 6 caracteres.";
+    } else if (form.senha.length < 8) {
+      // ALTERADO: era 6. O back-end (CreateUserDto) exige no mínimo 8 caracteres;
+      // com 6 o formulário aceitava a senha e o back-end recusava com erro 400.
+      newErrors.senha = "A senha deve ter no mínimo 8 caracteres.";
     }
 
     if (!form.confirmarSenha) {
