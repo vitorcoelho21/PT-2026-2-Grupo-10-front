@@ -1,4 +1,4 @@
-import { getToken } from "@/utils/token";
+import { clearToken, getToken } from "@/utils/token";
 import axios from "axios";
 
 const api = axios.create({
