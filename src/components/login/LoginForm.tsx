@@ -45,7 +45,7 @@ export default function LoginForm({
     try {
       await login({ email, senhaHash: senha });
 
-      router.push("/dashboard");
+      router.push("/feed");
     } catch (err: any) {
       if (err.response) {
         const status = err.response.status;

@@ -11,7 +11,7 @@ import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
 import ProdutosDestaqueMercado from "@/components/home/ProdutosDestaqueMercado";
 import ProdutosDestaqueBeleza from "@/components/home/ProdutosDestaqueBeleza";
 import ProdutosDestaqueModa from "@/components/home/ProdutosDestaqueModa";
-import { getToken } from "@/utils/token"; // Usando a mesma função segura de token do teu projeto
+import { getToken } from "@/utils/token";
 
 
 
