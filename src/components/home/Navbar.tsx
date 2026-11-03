@@ -13,7 +13,17 @@ export default function Navbar() {
         />
       </Link>
 
+
+
+
+
+      {/* Links de navegação e autenticação */}
       <div className="flex items-center gap-6 text-sm font-semibold">
+         <ShoppingBag className="h-5 w-5 cursor-pointer hover:text-gray-300" />
+        
+        <Link href="/lojas" title="Minhas Lojas">
+          <Store className="h-5 w-5 cursor-pointer hover:text-gray-300" />
+        </Link>
         <Link href="/login" className="hover:text-gray-300">LOGIN</Link>
         <Link href="/cadastro" className="rounded-full bg-[#7B3CF6] px-6 py-2 transition hover:bg-purple-600">
           CADASTRE-SE
