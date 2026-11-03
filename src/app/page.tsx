@@ -27,7 +27,7 @@ const router = useRouter();
     
     if (token) {
       // Se estiver logado, redireciona automaticamente para o dashboard
-      router.replace("/dashboard");
+      router.replace("/feed");
     } else {
       // Se não estiver logado, libera a exibição da landing page pública
       setVerificando(false);
