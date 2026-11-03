@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { login } from "@/services/authService";
 
-import AuthLayout from "@/components/AuthLayout";
+import AuthLayout from "@/components/login/AuthLayout";
 import Input from "@/components/Input";
 
 // "senhaRedefinida" indica que o usuário acabou de trocar a senha (veio de /redefinir-senha)
@@ -44,8 +44,8 @@ export default function LoginForm({
     setLoading(true);
     try {
       await login({ email, senhaHash: senha });
-      //  antes ia para "/", que redireciona de volta ao /login, agora vai pra /home
-      router.push("/home");
+
+      router.push("/dashboard");
     } catch (err: any) {
       if (err.response) {
         const status = err.response.status;
