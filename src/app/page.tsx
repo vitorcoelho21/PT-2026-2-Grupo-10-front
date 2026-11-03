@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/home/Navbar";
-import HeroSection from "@/components/home/Fantoche";
+import Fantoche from "@/components/home/Fantoche";
 import SearchBar from "@/components/home/SearchBar";
 import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
 import ProdutosDestaqueMercado from "@/components/home/ProdutosDestaqueMercado";
@@ -44,24 +44,22 @@ const router = useRouter();
   }
 
   return (
-    <div className="min-h-screen bg-[#FDF8EE] font-sans">
-      {/* Topo Preto (Navbar + Hero) */}
-      <div className="relative rounded-b-[40px] bg-black pb-24">
-        <Navbar />
-        <HeroSection />
-      </div>
-
-      {/* Barra de Pesquisa Flutuante */}
-      <SearchBar />
-
-      {/* Conteúdo Principal (Bege) */}
-      <div className="px-8 py-12 md:px-16">
-        <CategoriasCarrossel />
-        <ProdutosDestaqueMercado />
-        <ProdutosDestaqueBeleza />
-        <ProdutosDestaqueModa />
-
-      </div>
-    </div>
+          <div className="min-h-screen bg-[#FDF8EE] font-sans">
+            <div className="relative rounded-b-[40px] bg-black pb-16 overflow-hidden">
+              <Navbar/>
+              <Fantoche />
+            </div>
+    
+            {}
+            <SearchBar />
+    
+            {}
+            <div className="px-8 py-12 md:px-16">
+              <CategoriasCarrossel />
+              <ProdutosDestaqueMercado />
+              <ProdutosDestaqueBeleza />
+              <ProdutosDestaqueModa />
+            </div>
+          </div>
   );
 }

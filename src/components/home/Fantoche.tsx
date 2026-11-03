@@ -1,4 +1,4 @@
-export default function HeroSection() {
+export default function Fantoche() {
   return (
     <div className="mt-8 flex items-center px-8 text-white md:px-16">
       <div className="w-1/2">
