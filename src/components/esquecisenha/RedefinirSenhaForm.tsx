@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 
-import AuthLayout from "@/components/AuthLayout";
+import AuthLayout from "@/components/login/AuthLayout";
 import Input from "@/components/Input";
 import { logout, resetPassword } from "@/services/authService";
 import { extrairMensagemErro } from "@/utils/erros";
