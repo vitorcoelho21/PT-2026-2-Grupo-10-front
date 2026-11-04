@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import CadastroForm from "@/components/CadastroForm";
+import CadastroForm from "@/components/cadastro/CadastroForm";
 
 export const metadata: Metadata = {
   title: "Cadastro | Stock.io",

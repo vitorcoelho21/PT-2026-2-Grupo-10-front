@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 
-import AuthLayout from "@/components/AuthLayout";
+import AuthLayout from "@/components/login/AuthLayout";
 import Input from "@/components/Input";
 import { forgotPassword } from "@/services/authService";
 import { extrairMensagemErro } from "@/utils/erros";

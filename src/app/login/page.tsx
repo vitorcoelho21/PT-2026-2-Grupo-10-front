@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "@/components/login/LoginForm";
 
 export const metadata: Metadata = {
   title: "Login | Stock.io",
