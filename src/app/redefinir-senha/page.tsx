@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import RedefinirSenhaForm from "@/components/RedefinirSenhaForm";
+import RedefinirSenhaForm from "@/components/esquecisenha/RedefinirSenhaForm";
 
 export const metadata: Metadata = {
   title: "Nova senha | Stock.io",
