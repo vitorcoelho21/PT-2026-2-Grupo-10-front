@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import NavbarLogado from "@/components/home/NavbarLogado";
+import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/home/SearchBar";
 import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
 import ProdutosDestaqueBeleza from "@/components/home/ProdutosDestaqueBeleza";
@@ -27,7 +27,7 @@ export default function DashboardPage() {
     <RotaProtegida>
       <div className="min-h-screen bg-[#FDF8EE] font-sans">
         <div className="relative rounded-b-[40px] bg-black pb-16 overflow-hidden">
-          <NavbarLogado />
+          <Navbar />
           <Fantoche />
         </div>
 

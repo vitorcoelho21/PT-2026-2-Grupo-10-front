@@ -1,4 +1,4 @@
-import NavbarLogado from "@/components/home/NavbarLogado";
+import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/home/SearchBar";
 import FiltrosEletronicos from "@/components/eletronicos/FiltrosEletronicos";
 import ListaProdutos from "@/components/eletronicos/ListaProdutos";
@@ -8,7 +8,7 @@ export default function PaginaEletronicos() {
     <div className="min-h-screen bg-[#FDF8EE] font-sans">
       {/* Topo Preto / Hero Section */}
       <div className="relative rounded-b-[40px] bg-black pb-24 overflow-hidden">
-        <NavbarLogado />
+        <Navbar />
 
         <div className="relative flex items-center px-8 pb-15 pt-6 text-white md:px-16">
           <div className="ml-60 z-20">
