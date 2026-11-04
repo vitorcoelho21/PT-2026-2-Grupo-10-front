@@ -70,7 +70,7 @@ export default function RedefinirSenhaForm({ token }: { token: string }) {
   
   if (!token || tokenInvalido) {
     return (
-      <AuthLayout title="Link inválido" image="/images/login.svg">
+      <AuthLayout title="Link inválido" image="/images/mascote-login.svg">
         <div className="flex flex-col gap-5">
           <p className="rounded-xl bg-red-500/10 px-4 py-3 text-center text-sm text-red-300">
             Este link de recuperação é inválido ou expirou. Cada link vale por 30 minutos
@@ -79,7 +79,7 @@ export default function RedefinirSenhaForm({ token }: { token: string }) {
 
           <Link
             href="/esqueci-senha"
-            className="rounded-full bg-[#FF6B45] py-3 text-center text-sm font-bold uppercase text-[#14201B] hover:bg-[#FF845F]"
+            className="rounded-full bg-[#6A38F3] py-3 text-center text-sm font-bold uppercase text-white hover:bg-[#7B4FF5]"
           >
             Pedir novo link
           </Link>
@@ -93,7 +93,7 @@ export default function RedefinirSenhaForm({ token }: { token: string }) {
   }
 
   return (
-    <AuthLayout title="Crie uma nova senha" image="/images/login.svg">
+    <AuthLayout title="Crie uma nova senha" image="/images/mascote-login.svg">
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
         {errors.geral && (
           <p className="rounded-xl bg-red-500/10 px-4 py-2 text-center text-sm text-red-300">
@@ -122,7 +122,7 @@ export default function RedefinirSenhaForm({ token }: { token: string }) {
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 rounded-full bg-[#FF6B45] py-3 text-sm font-bold uppercase text-[#14201B] hover:bg-[#FF845F] disabled:opacity-60"
+          className="mt-2 rounded-full bg-[#6A38F3] py-3 text-sm font-bold uppercase text-white hover:bg-[#7B4FF5] disabled:opacity-60"
         >
           {loading ? "Salvando..." : "Salvar nova senha"}
         </button>

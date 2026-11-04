@@ -90,7 +90,7 @@ export default function CadastroForm() {
   }
 
   return (
-    <AuthLayout title="Crie sua conta" image="/images/cadastro.svg" reverse>
+    <AuthLayout title="Crie sua conta" image="/images/mascote-cadastro.svg" reverse>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
         {errors.geral && (
           <p className="rounded-xl bg-red-500/10 px-4 py-2 text-center text-sm text-red-300">
@@ -144,14 +144,14 @@ export default function CadastroForm() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-3 rounded-full bg-[#FF6B45] py-3 text-sm font-bold uppercase text-[#14201B] hover:bg-[#FF845F] disabled:opacity-60"
+          className="mt-3 rounded-full bg-[#6A38F3] py-3 text-sm font-bold uppercase text-white hover:bg-[#7B4FF5] disabled:opacity-60"
         >
           {loading ? "Criando conta..." : "Criar conta"}
         </button>
 
         <p className="text-sm text-white">
           Já possui uma conta?{" "}
-          <Link href="/login" className="font-semibold text-[#FF6B45] hover:underline">
+          <Link href="/login" className="font-semibold text-[#9B7BF7] hover:underline">
             Login
           </Link>
         </p>

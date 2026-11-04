@@ -73,17 +73,17 @@ export default function LoginForm({
   }
 
   return (
-    <AuthLayout title="Bem vindo de volta!" image="/images/login.svg">
+    <AuthLayout title="Bem vindo de volta!" image="/images/mascote-login.svg">
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
         {cadastroRealizado && !errors.geral && (
-          <p className="rounded-xl bg-[#1C3A28] px-4 py-2 text-center text-sm text-green-300">
+          <p className="rounded-xl bg-[#C6E700]/10 px-4 py-2 text-center text-sm text-[#C6E700]">
             Conta criada com sucesso! Faça login para continuar.
           </p>
         )}
 
         {/* o aviso exibido depois de redefinir a senha */}
         {senhaRedefinida && !errors.geral && (
-          <p className="rounded-xl bg-[#1C3A28] px-4 py-2 text-center text-sm text-green-300">
+          <p className="rounded-xl bg-[#C6E700]/10 px-4 py-2 text-center text-sm text-[#C6E700]">
             Senha redefinida com sucesso! Entre com a nova senha.
           </p>
         )}
@@ -120,14 +120,14 @@ export default function LoginForm({
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 rounded-full bg-[#FF6B45] py-3 text-sm font-bold uppercase text-[#14201B] hover:bg-[#FF845F] disabled:opacity-60"
+          className="mt-2 rounded-full bg-[#6A38F3] py-3 text-sm font-bold uppercase text-white hover:bg-[#7B4FF5] disabled:opacity-60"
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>
 
         <p className="text-sm text-white">
           Não possui uma conta?{" "}
-          <Link href="/cadastro" className="font-semibold text-[#FF6B45] hover:underline">
+          <Link href="/cadastro" className="font-semibold text-[#9B7BF7] hover:underline">
             Cadastre-se
           </Link>
         </p>

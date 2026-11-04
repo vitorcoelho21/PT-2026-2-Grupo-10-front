@@ -44,11 +44,11 @@ export default function EsqueciSenhaForm() {
   }
 
   return (
-    <AuthLayout title="Esqueceu sua senha?" image="/images/login.svg">
+    <AuthLayout title="Esqueceu sua senha?" image="/images/mascote-login.svg">
       {mensagemEnviado ? (
         // ---- Estado de SUCESSO: o pedido foi enviado ----
         <div className="flex flex-col gap-5">
-          <p className="rounded-xl bg-[#1C3A28] px-4 py-3 text-center text-sm text-green-300">
+          <p className="rounded-xl bg-[#C6E700]/10 px-4 py-3 text-center text-sm text-[#C6E700]">
             {mensagemEnviado}
           </p>
 
@@ -60,7 +60,7 @@ export default function EsqueciSenhaForm() {
           <button
             type="button"
             onClick={() => setMensagemEnviado("")}
-            className="rounded-full border border-[#FF6B45] py-3 text-sm font-bold uppercase text-[#FF6B45] hover:bg-[#FF6B45]/10"
+            className="rounded-full border border-[#9B7BF7] py-3 text-sm font-bold uppercase text-[#9B7BF7] hover:bg-[#9B7BF7]/10"
           >
             Pedir outro link
           </button>
@@ -94,7 +94,7 @@ export default function EsqueciSenhaForm() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 rounded-full bg-[#FF6B45] py-3 text-sm font-bold uppercase text-[#14201B] hover:bg-[#FF845F] disabled:opacity-60"
+            className="mt-2 rounded-full bg-[#6A38F3] py-3 text-sm font-bold uppercase text-white hover:bg-[#7B4FF5] disabled:opacity-60"
           >
             {loading ? "Enviando..." : "Enviar link"}
           </button>
