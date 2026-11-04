@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/home/Navbar";
+import Navbar from "@/components/Navbar";
 import Fantoche from "@/components/home/Fantoche";
 import SearchBar from "@/components/home/SearchBar";
 import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
@@ -46,7 +46,7 @@ const router = useRouter();
   return (
           <div className="min-h-screen bg-[#FDF8EE] font-sans">
             <div className="relative rounded-b-[40px] bg-black pb-16 overflow-hidden">
-              <Navbar/>
+              <Navbar />
               <Fantoche />
             </div>
     

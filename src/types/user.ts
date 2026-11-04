@@ -27,6 +27,16 @@ export interface MensagemResposta {
   message: string;
 }
 
+export interface Usuario {
+  id: number;
+  username: string;
+  nome: string;
+  email: string;
+  fotoPerfilUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Resposta do GET /auth/me: o conteúdo (payload) do token de quem está logado
 export interface UsuarioLogado {
   sub: number; // id do usuário
