@@ -1,4 +1,4 @@
-import { CadastroFormato } from '@/types/user';
+import { CadastroFormato, Usuario } from '@/types/user';
 import api from './api';
 
 // 1. Cadastro
@@ -12,17 +12,17 @@ export const registerUser = async (data: CadastroFormato) => {
   }
 };
 
+// 3. Buscar um usuário específico
+export const getUserById = async (id: number) => {
+  const response = await api.get<Usuario>(`/user/${id}`);
+  return response.data;
+};
+
 
 /*
 // 2. Buscar todos os usuários
 export const getAllUsers = async () => {
   const response = await api.get('/user');
-  return response.data;
-};
-
-// 3. Buscar um usuário específico
-export const getUserById = async (id: string) => {
-  const response = await api.get(`/user/${id}`);
   return response.data;
 };
 
