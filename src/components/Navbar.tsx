@@ -25,8 +25,6 @@ export default function Navbar() {
     () => undefined,
   );
 
-  const inicio = token ? "/home" : "/";
-
   function corIcone(ativo: boolean) {
     return ativo ? "text-[#C6E700]" : "text-white hover:text-[#6A38F3]";
   }
@@ -38,7 +36,7 @@ export default function Navbar() {
 
   return (
     <nav className="flex items-center justify-between gap-3 bg-black px-4 py-6 md:px-16">
-      <Link href={inicio} className="flex shrink-0 items-center">
+      <Link href="/" className="flex shrink-0 items-center">
         <img
           src="/images/LOGOStock.io.svg"
           alt="Stock.io"
@@ -47,8 +45,8 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-2.5 whitespace-nowrap text-xs font-bold uppercase text-white sm:gap-4 md:gap-8 md:text-sm">
-        <Link href={inicio} title="Início">
-          <IconeSacola className={`${ICONE} ${corIcone(pathname === "/home")}`} />
+        <Link href="/" title="Início">
+          <IconeSacola className={`${ICONE} ${corIcone(pathname === "/" || pathname === "/feed")}`} />
         </Link>
 
         <Link href="/lojas" title="Lojas">
