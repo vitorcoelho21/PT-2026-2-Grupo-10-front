@@ -3,19 +3,44 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
-import { ChevronLeft, Mail, User } from "lucide-react";
+import { ChevronLeft, Mail, Package, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import { getMe } from "@/services/authService";
+import { getLojas, Loja } from "@/services/lojaService";
+import { getProdutos } from "@/services/produtoService";
 import { getUserById } from "@/services/userService";
+import { Produto } from "@/types/produto";
 import { Usuario } from "@/types/user";
 import { extrairMensagemErro } from "@/utils/erros";
 import { getToken } from "@/utils/token";
+
+function formatarPreco(preco: string) {
+  return Number(preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
 
 export default function PerfilUsuario({ id }: { id?: number }) {
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [erro, setErro] = useState("");
+  const [produtos, setProdutos] = useState<Produto[] | null>(null);
+  const [erroProdutos, setErroProdutos] = useState("");
+  const idUsuario = usuario?.id;
+
+  useEffect(() => {
+    if (idUsuario === undefined) return;
+
+    getLojas()
+      .then((lojas: Loja[]) =>
+        Promise.all(
+          lojas
+            .filter((loja) => loja.usuarioId === idUsuario)
+            .map((loja) => getProdutos({ lojaId: loja.id })),
+        ),
+      )
+      .then((listas) => setProdutos(listas.flat()))
+      .catch((err) => setErroProdutos(extrairMensagemErro(err, "Não foi possível carregar os produtos.")));
+  }, [idUsuario]);
 
   useEffect(() => {
     const buscarId = id !== undefined ? Promise.resolve(id) : getMe().then((me) => me.sub);
@@ -85,9 +110,42 @@ export default function PerfilUsuario({ id }: { id?: number }) {
         {usuario && (
           <section className="mt-12">
             <h2 className="mb-6 text-2xl font-bold text-black">Produtos</h2>
-            <p className="rounded-3xl bg-white px-6 py-10 text-center text-sm text-gray-600">
-              Nenhum produto cadastrado ainda.
-            </p>
+
+            {erroProdutos && (
+              <p className="w-fit rounded-xl bg-red-500/10 px-4 py-2 text-sm text-red-600">{erroProdutos}</p>
+            )}
+
+            {!erroProdutos && !produtos && <p className="text-sm text-gray-600">Carregando produtos...</p>}
+
+            {produtos?.length === 0 && (
+              <p className="rounded-3xl bg-white px-6 py-10 text-center text-sm text-gray-600">
+                Nenhum produto cadastrado ainda.
+              </p>
+            )}
+
+            {produtos && produtos.length > 0 && (
+              <ul className="flex gap-4 overflow-x-auto pb-4">
+                {produtos.map((produto) => (
+                  <li key={produto.id} className="flex w-44 shrink-0 flex-col rounded-3xl bg-white p-4 md:w-52">
+                    <div className="mb-3 flex h-28 items-center justify-center rounded-2xl bg-[#F6F3E4] md:h-32">
+                      <Package className="h-10 w-10 text-[#6A38F3]" />
+                    </div>
+                    <p className="truncate text-sm font-bold text-black" title={produto.nome}>
+                      {produto.nome}
+                    </p>
+                    <p className="text-sm font-bold text-black">{formatarPreco(produto.preco)}</p>
+                    <p className="truncate text-xs text-gray-500">{produto.loja.nome}</p>
+                    <span
+                      className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${
+                        produto.estoque > 0 ? "text-[#6A38F3]" : "text-red-500"
+                      }`}
+                    >
+                      {produto.estoque > 0 ? `${produto.estoque} em estoque` : "Esgotado"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
       </div>
