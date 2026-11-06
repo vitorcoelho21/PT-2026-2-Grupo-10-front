@@ -1,35 +1,9 @@
-
-"use client";
-
 import Navbar from "@/components/Navbar";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import SearchBar from "@/components/home/SearchBar";
 import FiltrosEletronicos from "@/components/eletronicos/FiltrosEletronicos";
 import ListaProdutos from "@/components/eletronicos/ListaProdutos";
-import { getToken } from "@/utils/token";
 
-export default function PaginaEletronicos() {
-
-
-  const router = useRouter();
-    const [verificando, setVerificando] = useState(true);
-  
-    useEffect(() => {
-      // Verifica se já existe um token ativo no navegador
-      const token = getToken();
-      
-      if (token) {
-        // Se estiver logado, redireciona automaticamente para o dashboard
-        router.replace("/eletronicoslogado");
-      } else {
-        // Se não estiver logado, libera a exibição da landing page pública
-        setVerificando(false);
-      }
-    }, [router]);
-
-
-  
+export default function PaginaBrinquedos() {
   return (
     <div className="min-h-screen bg-[#FDF8EE] font-sans">
       {/* Topo Preto / Hero Section */}
@@ -39,7 +13,7 @@ export default function PaginaEletronicos() {
         <div className="relative flex items-center px-8 pb-15 pt-6 text-white md:px-16">
           <div className="ml-60 z-20">
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              O universo da tecnologia<br />em um só lugar
+              O universo de casa<br />em um só lugar
             </h1>
           </div>
 

@@ -2,14 +2,14 @@ import Link from "next/link";
 
 export default function CategoriasCarrossel() {
   const categorias = [
-    { nome: "Mercado", icon: "🛒", rota: "/mercado" },
-    { nome: "Farmácia", icon: "💊", rota: "/farmacia" },
-    { nome: "Beleza", icon: "💄", rota: "/beleza" },
-    { nome: "Moda", icon: "👗", rota: "/moda" },
-    { nome: "Eletrônicos", icon: "💻", rota: "/eletronicosdeslogado" },
-    { nome: "Jogos", icon: "🎮", rota: "/jogos" },
-    { nome: "Brinquedos", icon: "🧸", rota: "/brinquedos" },
-    { nome: "Casa", icon: "🏠", rota: "/casa" },
+    { nome: "Mercado", img: "/images/CarrosselCategorias/mercado.svg", rota: "/categoriasespecificas/mercado" },
+    { nome: "Farmácia", img: "/images/CarrosselCategorias/remedio.svg", rota: "/categoriasespecificas/farmacia" },
+    { nome: "Beleza", img: "/images/CarrosselCategorias/batom.svg", rota: "/categoriasespecificas/beleza" },
+    { nome: "Moda", img: "/images/CarrosselCategorias/moda.svg", rota: "/categoriasespecificas/moda" },
+    { nome: "Eletrônicos", img: "/images/CarrosselCategorias/laptop.svg", rota: "/categoriasespecificas/eletronicos" },
+    { nome: "Jogos", img: "/images/CarrosselCategorias/videogame.svg", rota: "/categoriasespecificas/jogos" },
+    { nome: "Brinquedos", img: "/images/CarrosselCategorias/BONECA.png", rota: "/categoriasespecificas/brinquedos" },
+    { nome: "Casa", img: "/images/CarrosselCategorias/CASA.png", rota: "/categoriasespecificas/casa" },
   ];
 
   return (
@@ -22,7 +22,14 @@ export default function CategoriasCarrossel() {
             href={cat.rota} 
             className="flex h-[100px] min-w-[100px] flex-col items-center justify-center gap-2 rounded-3xl bg-white shadow-sm transition hover:shadow-md"
           >
-            <span className="text-2xl">{cat.icon}</span>
+            {}
+            <div className="w-8 h-8 flex items-center justify-center">
+              <img 
+                src={cat.img} 
+                alt={cat.nome} 
+                className="max-h-full max-w-full object-contain" 
+              />
+            </div>
             <span className="text-xs font-medium text-gray-800">{cat.nome}</span>
           </Link>
         ))}
