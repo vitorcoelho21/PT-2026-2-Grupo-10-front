@@ -1,9 +1,9 @@
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/home/SearchBar";
-import FiltrosEletronicos from "@/components/eletronicos/FiltrosEletronicos";
-import ListaProdutos from "@/components/eletronicos/ListaProdutos";
+import FiltrosFarmacia from "@/components/feats-tela-de-categorias/FiltrosFarmacia";
+import ListaProdutos from "@/components/feats-tela-de-categorias/ListaProdutos";
 
-export default function PaginaBrinquedos() {
+export default function PaginaEletronicos() {
   return (
     <div className="min-h-screen bg-[#FDF8EE] font-sans">
       {/* Topo Preto / Hero Section */}
@@ -13,7 +13,7 @@ export default function PaginaBrinquedos() {
         <div className="relative flex items-center px-8 pb-15 pt-6 text-white md:px-16">
           <div className="ml-60 z-20">
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              O universo dos brinquedos<br />em um só lugar
+              O universo da farmácia<br />em um só lugar
             </h1>
           </div>
 
@@ -36,12 +36,14 @@ export default function PaginaBrinquedos() {
 
       {/* Filtros e Ordenação */}
       <div className="-mt-11">
-        <FiltrosEletronicos />
+        <FiltrosFarmacia />
       </div>
 
       {/* Grelha de Produtos vindos do Banco de Dados */}
       <div className="px-8 pb-16 md:px-16">
-        <ListaProdutos />
+        
+        <ListaProdutos categoria = "farmacia" />
+        
       </div>
     </div>
   );

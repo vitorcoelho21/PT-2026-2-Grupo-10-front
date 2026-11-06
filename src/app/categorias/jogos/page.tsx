@@ -1,10 +1,9 @@
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/home/SearchBar";
-import FiltrosEletronicos from "@/components/eletronicos/FiltrosEletronicos";
-import ListaProdutos from "@/components/eletronicos/ListaProdutos";
-import RotaProtegida from "@/components/RotaProtegida";
+import FiltrosJogos from "@/components/feats-tela-de-categorias/FiltrosJogos";
+import ListaProdutos from "@/components/feats-tela-de-categorias/ListaProdutos";
 
-export default function PaginaMercado() {
+export default function PaginaEletronicos() {
   return (
     <div className="min-h-screen bg-[#FDF8EE] font-sans">
       {/* Topo Preto / Hero Section */}
@@ -37,12 +36,14 @@ export default function PaginaMercado() {
 
       {/* Filtros e Ordenação */}
       <div className="-mt-11">
-        <FiltrosEletronicos />
+        <FiltrosJogos />
       </div>
 
       {/* Grelha de Produtos vindos do Banco de Dados */}
       <div className="px-8 pb-16 md:px-16">
-        <ListaProdutos />
+
+        <ListaProdutos categoria = "jogos" />
+
       </div>
     </div>
   );

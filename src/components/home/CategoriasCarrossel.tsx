@@ -2,14 +2,14 @@ import Link from "next/link";
 
 export default function CategoriasCarrossel() {
   const categorias = [
-    { nome: "Mercado", img: "/images/CarrosselCategorias/mercado.svg", rota: "/categoriasespecificas/mercado" },
-    { nome: "Farmácia", img: "/images/CarrosselCategorias/remedio.svg", rota: "/categoriasespecificas/farmacia" },
-    { nome: "Beleza", img: "/images/CarrosselCategorias/batom.svg", rota: "/categoriasespecificas/beleza" },
-    { nome: "Moda", img: "/images/CarrosselCategorias/moda.svg", rota: "/categoriasespecificas/moda" },
-    { nome: "Eletrônicos", img: "/images/CarrosselCategorias/laptop.svg", rota: "/categoriasespecificas/eletronicos" },
-    { nome: "Jogos", img: "/images/CarrosselCategorias/videogame.svg", rota: "/categoriasespecificas/jogos" },
-    { nome: "Brinquedos", img: "/images/CarrosselCategorias/BONECA.png", rota: "/categoriasespecificas/brinquedos" },
-    { nome: "Casa", img: "/images/CarrosselCategorias/CASA.png", rota: "/categoriasespecificas/casa" },
+    { nome: "Mercado", img: "/images/CarrosselCategorias/mercado.svg", rota: "/categorias/mercado" },
+    { nome: "Farmácia", img: "/images/CarrosselCategorias/remedio.svg", rota: "/categorias/farmacia" },
+    { nome: "Beleza", img: "/images/CarrosselCategorias/batom.svg", rota: "/categorias/beleza" },
+    { nome: "Moda", img: "/images/CarrosselCategorias/moda.svg", rota: "/categorias/moda" },
+    { nome: "Eletrônicos", img: "/images/CarrosselCategorias/laptop.svg", rota: "/categorias/eletronicos" },
+    { nome: "Jogos", img: "/images/CarrosselCategorias/videogame.svg", rota: "/categorias/jogos" },
+    { nome: "Brinquedos", img: "/images/CarrosselCategorias/BONECA.png", rota: "/categorias/brinquedos" },
+    { nome: "Casa", img: "/images/CarrosselCategorias/CASA.png", rota: "/categorias/casa" },
   ];
 
   return (

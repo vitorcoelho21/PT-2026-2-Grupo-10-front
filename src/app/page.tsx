@@ -9,7 +9,7 @@ import Fantoche from "@/components/home/Fantoche";
 import SearchBar from "@/components/home/SearchBar";
 import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
 import ProdutosDestaqueMercado from "@/components/home/ProdutosDestaqueMercado";
-import ProdutosDestaqueBeleza from "@/components/home/ProdutosDestaqueBeleza";
+import ProdutosDestaqueBeleza from "@/components/home/SecaoProdutosDestaque";
 import ProdutosDestaqueModa from "@/components/home/ProdutosDestaqueModa";
 import { getToken } from "@/utils/token";
 
