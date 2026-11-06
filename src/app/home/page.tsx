@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/home/SearchBar";
 import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
-import ProdutosDestaqueBeleza from "@/components/home/ProdutosDestaqueBeleza";
-import ProdutosDestaqueMercado from "@/components/home/ProdutosDestaqueMercado";
-import ProdutosDestaqueModa from "@/components/home/ProdutosDestaqueModa";
-import RotaProtegida from "@/components/RotaProtegida";
+import SecaoProdutosDestaque from "@/components/home/SecaoProdutosDestaque";
 import Fantoche from "@/components/home/Fantoche";
 import { getMe } from "@/services/authService";
 
@@ -24,7 +21,6 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <RotaProtegida>
       <div className="min-h-screen bg-[#FDF8EE] font-sans">
         <div className="relative rounded-b-[40px] bg-black pb-16 overflow-hidden">
           <Navbar />
@@ -36,12 +32,17 @@ export default function DashboardPage() {
 
         {}
         <div className="px-8 py-12 md:px-16">
-          <CategoriasCarrossel />
-          <ProdutosDestaqueMercado />
-          <ProdutosDestaqueBeleza />
-          <ProdutosDestaqueModa />
+          {/* Carrossel Centralizado */}
+          <div className="flex justify-center mb-12 w-full">
+            <CategoriasCarrossel />
+          </div>
+          
+          {/* Secções de Produtos */}
+          <SecaoProdutosDestaque tituloDestaque="em Mercado" categoria="mercado" />
+          <SecaoProdutosDestaque tituloDestaque="em Beleza" categoria="beleza" />
+          <SecaoProdutosDestaque tituloDestaque="em Moda" categoria="moda" />
+          <SecaoProdutosDestaque tituloDestaque="em Eletrônicos" categoria="eletronicos" />
         </div>
       </div>
-    </RotaProtegida>
   );
 }

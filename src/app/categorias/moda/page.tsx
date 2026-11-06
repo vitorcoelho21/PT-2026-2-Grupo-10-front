@@ -1,35 +1,9 @@
-
-"use client";
-
 import Navbar from "@/components/Navbar";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import SearchBar from "@/components/home/SearchBar";
-import FiltrosEletronicos from "@/components/eletronicos/FiltrosEletronicos";
-import ListaProdutos from "@/components/eletronicos/ListaProdutos";
-import { getToken } from "@/utils/token";
+import FiltrosModa from "@/components/feats-tela-de-categorias/FiltrosModa";
+import ListaProdutos from "@/components/feats-tela-de-categorias/ListaProdutos";
 
-export default function PaginaEletronicos() {
-
-
-  const router = useRouter();
-    const [verificando, setVerificando] = useState(true);
-  
-    useEffect(() => {
-      // Verifica se já existe um token ativo no navegador
-      const token = getToken();
-      
-      if (token) {
-        // Se estiver logado, redireciona automaticamente para o dashboard
-        router.replace("/eletronicoslogado");
-      } else {
-        // Se não estiver logado, libera a exibição da landing page pública
-        setVerificando(false);
-      }
-    }, [router]);
-
-
-  
+export default function PaginaModa() {
   return (
     <div className="min-h-screen bg-[#FDF8EE] font-sans">
       {/* Topo Preto / Hero Section */}
@@ -39,7 +13,7 @@ export default function PaginaEletronicos() {
         <div className="relative flex items-center px-8 pb-15 pt-6 text-white md:px-16">
           <div className="ml-60 z-20">
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              O universo da tecnologia<br />em um só lugar
+              O universo dos jogos<br />em um só lugar
             </h1>
           </div>
 
@@ -62,12 +36,14 @@ export default function PaginaEletronicos() {
 
       {/* Filtros e Ordenação */}
       <div className="-mt-11">
-        <FiltrosEletronicos />
+        <FiltrosModa />
       </div>
 
       {/* Grelha de Produtos vindos do Banco de Dados */}
       <div className="px-8 pb-16 md:px-16">
-        <ListaProdutos />
+
+        <ListaProdutos categoria = "moda" />
+
       </div>
     </div>
   );
