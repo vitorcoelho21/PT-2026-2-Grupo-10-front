@@ -31,7 +31,7 @@ export default function Navbar() {
 
   function handleLogout() {
     logout();
-    router.replace("/login");
+    router.replace("/home");
   }
 
   return (
