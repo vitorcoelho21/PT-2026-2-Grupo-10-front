@@ -8,6 +8,11 @@ export interface LojaData {
   stickerUrl?: string;
 }
 
+export interface Loja extends LojaData {
+  id: number;
+  usuarioId: number;
+}
+
 export const getLojas = async () => (await api.get('/lojas')).data;
 
 export const getLoja = async (id: number) => {
