@@ -40,7 +40,7 @@ export default function ListaProdutos({ categoria }: { categoria: string }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-      {produtos.map((produto: any) => (
+      {Array.isArray(produtos) && produtos.map((produto: any) => (
         <div 
           key={produto.id} 
           className="relative flex flex-col justify-between rounded-3xl bg-white p-5 shadow-sm transition hover:shadow-md"

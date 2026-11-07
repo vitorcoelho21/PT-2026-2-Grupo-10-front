@@ -13,7 +13,7 @@ export default function PaginaModa() {
         <div className="relative flex items-center px-8 pb-15 pt-6 text-white md:px-16">
           <div className="ml-60 z-20">
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              O universo dos jogos<br />em um só lugar
+              O universo da moda<br />em um só lugar
             </h1>
           </div>
 
