@@ -10,6 +10,8 @@ export interface Produto {
   updatedAt: string;
   categoria: { id: number; nome: string };
   loja: { id: number; nome: string };
+  // No GET /products vem só a imagem principal; no GET /products/:id vêm todas
+  imagens: ImagemProduto[];
 }
 
 export interface FiltrosProduto {
@@ -27,7 +29,6 @@ export interface ImagemProduto {
 
 // Resposta do GET /products/:id
 export interface ProdutoDetalhe extends Produto {
-  imagens: ImagemProduto[];
   mediaNotas: number | null;
   totalAvaliacoes: number;
 }
