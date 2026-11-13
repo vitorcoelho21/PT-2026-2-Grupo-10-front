@@ -59,6 +59,13 @@ export default function ProdutosDaMesmaLoja({ lojaId, produtoAtualId }: Produtos
             </div>
 
             <h3 className="truncate text-lg font-medium text-gray-900">{produto.nome}</h3>
+            <span
+              className={`mb-1 text-[10px] font-bold tracking-wider ${
+                produto.estoque > 0 ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              {produto.estoque > 0 ? "DISPONÍVEL" : "INDISPONÍVEL"}
+            </span>
             <p className="text-lg font-bold text-gray-900">{formatarPreco(produto.preco)}</p>
           </Link>
         ))}
