@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Produto } from "@/types/produto";
 
 interface SecaoProdutosProps {
   tituloDestaque: string; // Ex: "em Mercado"
@@ -9,7 +10,7 @@ interface SecaoProdutosProps {
 }
 
 export default function SecaoProdutosDestaque({ tituloDestaque, categoria }: SecaoProdutosProps) {
-  const [produtos, setProdutos] = useState([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,8 +51,10 @@ export default function SecaoProdutosDestaque({ tituloDestaque, categoria }: Sec
 
       {/* Grelha de 5 Produtos */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-        {produtos.map((produto: any) => (
-          <div key={produto.id} className="relative flex flex-col justify-between rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md h-[250px]">
+        {produtos.map((produto) => (
+          <Link
+            href={`/produtos/${produto.id}`}
+            key={produto.id} className="relative flex flex-col justify-between rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md h-[250px]">
              
             <div className="absolute right-3 top-3 rounded-md bg-gray-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-600">
               {produto.loja?.nome || "STOCK.IO"}
@@ -59,7 +62,7 @@ export default function SecaoProdutosDestaque({ tituloDestaque, categoria }: Sec
 
             <div className="my-4 flex h-24 w-full items-center justify-center">
               <img
-                src={produto.fotoUrl || "/images/placeholder.png"}
+                src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"}
                 alt={produto.nome}
                 className="max-h-full object-contain"
               />
@@ -74,7 +77,7 @@ export default function SecaoProdutosDestaque({ tituloDestaque, categoria }: Sec
                 {produto.estoque > 0 ? 'DISPONÍVEL' : 'INDISPONÍVEL'}
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
