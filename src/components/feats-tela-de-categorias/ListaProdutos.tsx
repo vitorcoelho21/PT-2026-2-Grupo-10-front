@@ -2,40 +2,59 @@
 
 import { useEffect, useState } from "react";
 
-// 1. Recebe a categoria como prop
-export default function ListaProdutos({ categoria }: { categoria: string }) {
+interface ListaProdutosProps {
+  categoria?: string; // sem categoria = busca em todos os produtos (usado na home)
+  busca?: string;     // termo digitado na search bar (já com debounce)
+}
+
+export default function ListaProdutos({ categoria, busca = "" }: ListaProdutosProps) {
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Evita que uma resposta antiga sobrescreva a da busca mais recente
+    const controller = new AbortController();
+
     async function carregarProdutos() {
       try {
-        // 2. Coloca a variável dinâmica no fetch usando crases (template literals)
-        const resposta = await fetch(`http://localhost:3000/products?categoria=${categoria}`, {
+        const params = new URLSearchParams();
+        if (categoria) params.set("categoria", categoria);
+        if (busca.trim()) params.set("busca", busca.trim());
+
+        const resposta = await fetch(`http://localhost:3000/products?${params}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-          }
+          },
+          signal: controller.signal,
         });
 
         const dados = await resposta.json();
         setProdutos(dados);
+        setLoading(false);
       } catch (erro) {
+        if (controller.signal.aborted) return;
         console.error("Erro ao carregar produtos:", erro);
-      } finally {
         setLoading(false);
       }
     }
 
     carregarProdutos();
-  }, [categoria]);
+    return () => controller.abort();
+  }, [categoria, busca]);
 
   if (loading) {
     return <p className="text-center text-gray-500 py-12">Carregando produtos do banco de dados...</p>;
   }
 
   if (produtos.length === 0) {
-    return <p className="text-center text-gray-500 py-12">Nenhum produto encontrado nesta categoria.</p>;
+    return (
+      <p className="text-center text-gray-500 py-12">
+        {busca.trim()
+          ? `Nenhum produto encontrado para "${busca.trim()}".`
+          : "Nenhum produto encontrado nesta categoria."}
+      </p>
+    );
   }
 
   return (
