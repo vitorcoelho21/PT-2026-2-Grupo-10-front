@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 // 1. Recebe a categoria como prop
 export default function ListaProdutos({ categoria }: { categoria: string }) {
@@ -41,8 +42,9 @@ export default function ListaProdutos({ categoria }: { categoria: string }) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
       {Array.isArray(produtos) && produtos.map((produto: any) => (
-        <div 
-          key={produto.id} 
+        <Link
+          href={`/produtos/${produto.id}`}
+          key={produto.id}
           className="relative flex flex-col justify-between rounded-3xl bg-white p-5 shadow-sm transition hover:shadow-md"
         >
           {/* Badge da Loja usando produto.loja?.nome */}
@@ -69,7 +71,7 @@ export default function ListaProdutos({ categoria }: { categoria: string }) {
               {produto.estoque > 0 ? 'DISPONÍVEL' : 'INDISPONÍVEL'}
             </span>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
