@@ -62,7 +62,7 @@ export default function SecaoProdutosDestaque({ tituloDestaque, categoria }: Sec
 
             <div className="my-4 flex h-24 w-full items-center justify-center">
               <img
-                src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.png"}
+                src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"}
                 alt={produto.nome}
                 className="max-h-full object-contain"
               />

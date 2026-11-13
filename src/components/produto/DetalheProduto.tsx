@@ -70,7 +70,7 @@ export default function DetalheProduto({ id }: { id: number }) {
     );
   }
 
-  const imagens = produto.imagens.length > 0 ? produto.imagens.map((i) => i.urlImagem) : ["/images/placeholder.png"];
+  const imagens = produto.imagens.length > 0 ? produto.imagens.map((i) => i.urlImagem) : ["/images/placeholder.svg"];
   const disponivel = produto.estoque > 0;
 
   return (
@@ -164,11 +164,18 @@ export default function DetalheProduto({ id }: { id: number }) {
             {avaliacoes.map((a) => (
               <li key={a.id} className="rounded-2xl bg-white p-5 shadow-sm">
                 <div className="mb-2 flex items-center gap-3">
-                  <img
-                    src={a.usuario.fotoPerfilUrl || "/images/placeholder.png"}
-                    alt={a.usuario.nome}
-                    className="h-10 w-10 rounded-full bg-gray-200 object-cover"
-                  />
+                  {a.usuario.fotoPerfilUrl ? (
+                    <img
+                      src={a.usuario.fotoPerfilUrl}
+                      alt={a.usuario.nome}
+                      className="h-10 w-10 rounded-full bg-gray-200 object-cover"
+                    />
+                  ) : (
+                    // Sem foto de perfil: mostra a inicial do nome
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#6A38F3] font-bold uppercase text-white">
+                      {a.usuario.nome.charAt(0)}
+                    </span>
+                  )}
                   <div>
                     <Link href={`/perfil/${a.usuario.id}`} className="font-semibold text-gray-900 hover:text-[#6A38F3]">
                       {a.usuario.nome}

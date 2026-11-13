@@ -56,7 +56,7 @@ export default function ListaProdutos({ categoria }: { categoria: string }) {
           {/* Imagem do Produto */}
           <div className="my-4 flex h-36 w-full items-center justify-center">
             <img 
-              src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.png"} 
+              src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"} 
               alt={produto.nome} 
               className="max-h-full object-contain"
             />
