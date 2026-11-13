@@ -16,7 +16,7 @@ export default async function PaginaProduto({ params }: PageProps<"/produtos/[id
         <Navbar />
       </div>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
+      <main className="mx-auto w-full max-w-7xl px-4 py-10 md:px-8">
         <DetalheProduto id={produtoId} />
       </main>
     </div>

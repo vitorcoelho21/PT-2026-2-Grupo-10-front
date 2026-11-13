@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
+import { ChevronLeft, Star } from "lucide-react";
+
+import BadgeLoja from "@/components/produto/BadgeLoja";
+import ProdutosDaMesmaLoja from "@/components/produto/ProdutosDaMesmaLoja";
 
 import { getAvaliacoesProduto, getProduto } from "@/services/produtoService";
 import { AvaliacaoProduto, ProdutoDetalhe } from "@/types/produto";
@@ -25,6 +30,7 @@ function Estrelas({ nota, tamanho = "text-lg" }: { nota: number; tamanho?: strin
 }
 
 export default function DetalheProduto({ id }: { id: number }) {
+  const router = useRouter();
   const [produto, setProduto] = useState<ProdutoDetalhe | null>(null);
   const [avaliacoes, setAvaliacoes] = useState<AvaliacaoProduto[]>([]);
   const [imagemAtiva, setImagemAtiva] = useState(0);
@@ -74,84 +80,85 @@ export default function DetalheProduto({ id }: { id: number }) {
   const disponivel = produto.estoque > 0;
 
   return (
-    <div className="space-y-12">
-      {/* Caminho de navegação */}
-      <nav className="text-sm text-gray-500">
-        <Link href="/home" className="hover:text-[#6A38F3]">Início</Link>
-        <span className="mx-2">/</span>
-        <Link href={`/categorias/${produto.categoria.nome.toLowerCase()}`} className="capitalize hover:text-[#6A38F3]">
-          {produto.categoria.nome}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-800">{produto.nome}</span>
-      </nav>
+    <div className="space-y-16">
+      <section className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        {/* Voltar */}
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Voltar"
+          className="w-fit shrink-0 text-black transition hover:text-[#6A38F3]"
+        >
+          <ChevronLeft className="h-10 w-10" strokeWidth={1.5} />
+        </button>
 
-      <section className="grid gap-8 md:grid-cols-2">
-        {/* Galeria */}
-        <div>
-          <div className="flex aspect-square items-center justify-center rounded-3xl bg-white p-8 shadow-sm">
-            <img src={imagens[imagemAtiva]} alt={produto.nome} className="max-h-full max-w-full object-contain" />
-          </div>
-
+        {/* Galeria: miniaturas na vertical + imagem principal */}
+        <div className="flex flex-col-reverse gap-4 sm:flex-row lg:w-[58%] lg:shrink-0">
           {imagens.length > 1 && (
-            <div className="mt-4 flex gap-3 overflow-x-auto">
+            // p-1: espaço para o contorno (ring) da miniatura ativa não ser cortado pelo scroll
+            <div className="-m-1 flex gap-3 overflow-x-auto p-1 sm:max-h-[568px] sm:w-[140px] sm:shrink-0 sm:flex-col sm:overflow-y-auto sm:overflow-x-hidden">
               {imagens.map((url, i) => (
                 <button
                   key={url + i}
                   type="button"
                   onClick={() => setImagemAtiva(i)}
-                  className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-white p-2 shadow-sm ring-2 transition ${
+                  aria-label={`Ver imagem ${i + 1}`}
+                  className={`flex aspect-square w-20 shrink-0 items-center overflow-hidden justify-center rounded-2xl bg-white p-2 shadow-sm ring-2 transition sm:w-full ${
                     i === imagemAtiva ? "ring-[#6A38F3]" : "ring-transparent hover:ring-gray-300"
                   }`}
                 >
-                  <img src={url} alt={`${produto.nome} - imagem ${i + 1}`} className="max-h-full object-contain" />
+                  <img src={url} alt="" className="max-h-full max-w-full object-contain" />
                 </button>
               ))}
             </div>
           )}
+
+          <div className="relative flex aspect-square flex-1 items-center justify-center rounded-3xl bg-white p-10 shadow-sm">
+            <div className="absolute right-5 top-5">
+              <BadgeLoja loja={produto.loja} tamanho="lg" comLink />
+            </div>
+            <img src={imagens[imagemAtiva]} alt={produto.nome} className="max-h-full max-w-full object-contain" />
+          </div>
         </div>
 
         {/* Informações */}
-        <div className="flex flex-col">
-          <span className="mb-3 w-fit rounded-md bg-gray-200 px-2 py-1 text-xs font-bold uppercase tracking-wider text-gray-700">
-            {produto.loja.nome}
-          </span>
+        <div className="min-w-0 flex-1">
+          <h1 className="mb-2 text-4xl font-medium text-black md:text-5xl">{produto.nome}</h1>
 
-          <h1 className="mb-3 text-3xl font-bold text-black md:text-4xl">{produto.nome}</h1>
-
-          <div className="mb-6 flex items-center gap-2 text-sm text-gray-600">
-            {produto.mediaNotas != null ? (
-              <>
-                <Estrelas nota={produto.mediaNotas} />
-                <span className="font-semibold text-gray-800">{produto.mediaNotas.toFixed(1)}</span>
-                <span>({produto.totalAvaliacoes} {produto.totalAvaliacoes === 1 ? "avaliação" : "avaliações"})</span>
-              </>
-            ) : (
-              <span>Ainda sem avaliações</span>
-            )}
+          <div className="mb-4 flex flex-wrap items-center gap-x-8 gap-y-1 text-lg">
+            <span className="flex items-center gap-1 text-gray-700">
+              <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              {produto.mediaNotas != null ? (
+                <>
+                  {produto.mediaNotas.toFixed(1)} | {produto.totalAvaliacoes}{" "}
+                  {produto.totalAvaliacoes === 1 ? "avaliação" : "avaliações"}
+                </>
+              ) : (
+                "Sem avaliações"
+              )}
+            </span>
+            <Link
+              href={`/categorias/${produto.categoria.nome.toLowerCase()}`}
+              className="lowercase text-[#6A38F3] hover:underline"
+            >
+              {produto.categoria.nome}
+            </Link>
+            <span className={disponivel ? "text-[#6A38F3]" : "text-red-500"}>
+              {disponivel ? `${produto.estoque} disponíve${produto.estoque === 1 ? "l" : "is"}` : "Indisponível"}
+            </span>
           </div>
 
-          <p className="mb-2 text-4xl font-bold text-black">{formatarPreco(produto.preco)}</p>
+          <p className="mb-10 text-4xl font-medium text-black md:text-5xl">{formatarPreco(produto.preco)}</p>
 
-          <p className={`mb-8 text-sm font-bold tracking-wider ${disponivel ? "text-green-600" : "text-red-500"}`}>
-            {disponivel ? `DISPONÍVEL · ${produto.estoque} em estoque` : "INDISPONÍVEL"}
+          <h2 className="text-2xl font-medium text-black">Descrição</h2>
+          <div className="mb-4 mt-1 h-1 w-8 rounded-full bg-gray-300" />
+          <p className="whitespace-pre-line text-sm leading-snug text-gray-800">
+            {produto.descricao || "Este produto ainda não tem descrição."}
           </p>
-
-          <div className="mb-8">
-            <h2 className="mb-2 text-lg font-semibold text-black">Descrição</h2>
-            <p className="whitespace-pre-line text-gray-700">
-              {produto.descricao || "Este produto ainda não tem descrição."}
-            </p>
-          </div>
-
-          <Link
-            href={`/lojas/${produto.loja.id}`}
-            className="mt-auto w-fit rounded-full bg-[#6A38F3] px-8 py-3 text-sm font-bold uppercase text-white transition hover:bg-black"
-          >
-            Ver loja
-          </Link>
         </div>
       </section>
+
+      <ProdutosDaMesmaLoja lojaId={produto.loja.id} produtoAtualId={produto.id} />
 
       {/* Avaliações */}
       <section>

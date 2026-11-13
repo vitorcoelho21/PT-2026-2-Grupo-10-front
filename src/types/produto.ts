@@ -9,7 +9,8 @@ export interface Produto {
   createdAt: string;
   updatedAt: string;
   categoria: { id: number; nome: string };
-  loja: { id: number; nome: string };
+  // logoUrl só aparece se o back-end incluir no select da loja
+  loja: { id: number; nome: string; logoUrl?: string | null };
   // No GET /products vem só a imagem principal; no GET /products/:id vêm todas
   imagens: ImagemProduto[];
 }
