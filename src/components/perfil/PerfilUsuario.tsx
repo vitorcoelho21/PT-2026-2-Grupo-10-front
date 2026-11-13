@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
-import { ChevronLeft, Mail, Package, User } from "lucide-react";
+import { ChevronLeft, Mail, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import { getMe } from "@/services/authService";
@@ -126,22 +127,31 @@ export default function PerfilUsuario({ id }: { id?: number }) {
             {produtos && produtos.length > 0 && (
               <ul className="flex gap-4 overflow-x-auto pb-4">
                 {produtos.map((produto) => (
-                  <li key={produto.id} className="flex w-44 shrink-0 flex-col rounded-3xl bg-white p-4 md:w-52">
-                    <div className="mb-3 flex h-28 items-center justify-center rounded-2xl bg-[#F6F3E4] md:h-32">
-                      <Package className="h-10 w-10 text-[#6A38F3]" />
-                    </div>
-                    <p className="truncate text-sm font-bold text-black" title={produto.nome}>
-                      {produto.nome}
-                    </p>
-                    <p className="text-sm font-bold text-black">{formatarPreco(produto.preco)}</p>
-                    <p className="truncate text-xs text-gray-500">{produto.loja.nome}</p>
-                    <span
-                      className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${
-                        produto.estoque > 0 ? "text-[#6A38F3]" : "text-red-500"
-                      }`}
+                  <li key={produto.id} className="w-44 shrink-0 md:w-52">
+                    <Link
+                      href={`/produtos/${produto.id}`}
+                      className="flex h-full flex-col rounded-3xl bg-white p-4 transition hover:shadow-md"
                     >
-                      {produto.estoque > 0 ? `${produto.estoque} em estoque` : "Esgotado"}
-                    </span>
+                      <div className="mb-3 flex h-28 items-center justify-center overflow-hidden rounded-2xl bg-white md:h-32">
+                        <img
+                          src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"}
+                          alt={produto.nome}
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                      <p className="truncate text-sm font-bold text-black" title={produto.nome}>
+                        {produto.nome}
+                      </p>
+                      <p className="text-sm font-bold text-black">{formatarPreco(produto.preco)}</p>
+                      <p className="truncate text-xs text-gray-500">{produto.loja.nome}</p>
+                      <span
+                        className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${
+                          produto.estoque > 0 ? "text-[#6A38F3]" : "text-red-500"
+                        }`}
+                      >
+                        {produto.estoque > 0 ? `${produto.estoque} em estoque` : "Esgotado"}
+                      </span>
+                    </Link>
                   </li>
                 ))}
               </ul>
