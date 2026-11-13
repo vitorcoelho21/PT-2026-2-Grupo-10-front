@@ -9,30 +9,16 @@ import { ChevronLeft, Star } from "lucide-react";
 import BadgeLoja from "@/components/produto/BadgeLoja";
 import ProdutosDaMesmaLoja from "@/components/produto/ProdutosDaMesmaLoja";
 
-import { getAvaliacoesProduto, getProduto } from "@/services/produtoService";
-import { AvaliacaoProduto, ProdutoDetalhe } from "@/types/produto";
+import { getProduto } from "@/services/produtoService";
+import { ProdutoDetalhe } from "@/types/produto";
 
 function formatarPreco(preco: string) {
   return Number(preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function Estrelas({ nota, tamanho = "text-lg" }: { nota: number; tamanho?: string }) {
-  const cheias = Math.round(nota);
-  return (
-    <span className={`${tamanho} leading-none`} aria-label={`${nota.toFixed(1)} de 5 estrelas`}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} className={i <= cheias ? "text-[#6A38F3]" : "text-gray-300"}>
-          ★
-        </span>
-      ))}
-    </span>
-  );
-}
-
 export default function DetalheProduto({ id }: { id: number }) {
   const router = useRouter();
   const [produto, setProduto] = useState<ProdutoDetalhe | null>(null);
-  const [avaliacoes, setAvaliacoes] = useState<AvaliacaoProduto[]>([]);
   const [imagemAtiva, setImagemAtiva] = useState(0);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
@@ -40,13 +26,7 @@ export default function DetalheProduto({ id }: { id: number }) {
   useEffect(() => {
     async function carregar() {
       try {
-        const [dadosProduto, dadosAvaliacoes] = await Promise.all([
-          getProduto(id),
-          // Se as avaliações falharem, a página ainda mostra o produto
-          getAvaliacoesProduto(id).catch(() => []),
-        ]);
-        setProduto(dadosProduto);
-        setAvaliacoes(dadosAvaliacoes);
+        setProduto(await getProduto(id));
       } catch (e) {
         setErro(
           isAxiosError(e) && e.response?.status === 404
@@ -159,48 +139,6 @@ export default function DetalheProduto({ id }: { id: number }) {
       </section>
 
       <ProdutosDaMesmaLoja lojaId={produto.loja.id} produtoAtualId={produto.id} />
-
-      {/* Avaliações */}
-      <section>
-        <h2 className="mb-6 text-2xl font-bold text-black">Avaliações</h2>
-
-        {avaliacoes.length === 0 ? (
-          <p className="text-gray-500">Ninguém avaliou este produto ainda.</p>
-        ) : (
-          <ul className="space-y-4">
-            {avaliacoes.map((a) => (
-              <li key={a.id} className="rounded-2xl bg-white p-5 shadow-sm">
-                <div className="mb-2 flex items-center gap-3">
-                  {a.usuario.fotoPerfilUrl ? (
-                    <img
-                      src={a.usuario.fotoPerfilUrl}
-                      alt={a.usuario.nome}
-                      className="h-10 w-10 rounded-full bg-gray-200 object-cover"
-                    />
-                  ) : (
-                    // Sem foto de perfil: mostra a inicial do nome
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#6A38F3] font-bold uppercase text-white">
-                      {a.usuario.nome.charAt(0)}
-                    </span>
-                  )}
-                  <div>
-                    <Link href={`/perfil/${a.usuario.id}`} className="font-semibold text-gray-900 hover:text-[#6A38F3]">
-                      {a.usuario.nome}
-                    </Link>
-                    <p className="text-xs text-gray-500">
-                      @{a.usuario.username} · {new Date(a.createdAt).toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
-                  <div className="ml-auto">
-                    <Estrelas nota={a.nota} tamanho="text-base" />
-                  </div>
-                </div>
-                {a.comentario && <p className="text-gray-700">{a.comentario}</p>}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
     </div>
   );
 }
