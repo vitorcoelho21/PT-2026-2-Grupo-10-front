@@ -48,3 +48,23 @@ export interface AvaliacaoProduto {
   // Produto avaliado (nome, loja e imagem principal). Vem na listagem do GET /reviews.
   produto?: { id: number; nome: string; loja: { id: number; nome: string }; imagens: ImagemProduto[] };
 }
+
+// Corpo do POST /products
+export interface CriarProdutoDados {
+  lojaId: number;
+  categoriaId: number;
+  nome: string;
+  descricao?: string;
+  preco: number;
+  estoque: number;
+}
+
+// Corpo do PATCH /products/:id (a loja não pode ser trocada)
+export type AtualizarProdutoDados = Partial<Omit<CriarProdutoDados, 'lojaId'>>;
+
+// Item da resposta do GET /categories/opcoes
+export interface OpcaoCategoria {
+  id: number;
+  nome: string;
+  caminho: string; // ex.: "Moda > Camisetas"
+}
