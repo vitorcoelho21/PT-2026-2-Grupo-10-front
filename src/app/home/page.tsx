@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/home/SearchBar";
 import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
 import SecaoProdutosDestaque from "@/components/home/SecaoProdutosDestaque";
+import SecaoLojas from "@/components/home/SecaoLojas";
 import Fantoche from "@/components/home/Fantoche";
 import { getMe } from "@/services/authService";
 
@@ -42,6 +43,9 @@ export default function DashboardPage() {
           <SecaoProdutosDestaque tituloDestaque="em Beleza" categoria="beleza" />
           <SecaoProdutosDestaque tituloDestaque="em Moda" categoria="moda" />
           <SecaoProdutosDestaque tituloDestaque="em Eletrônicos" categoria="eletronicos" />
+
+          {/* Lojas */}
+          <SecaoLojas />
         </div>
       </div>
   );

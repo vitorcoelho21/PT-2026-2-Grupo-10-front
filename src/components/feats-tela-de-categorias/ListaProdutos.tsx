@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Produto } from "@/types/produto";
 
 // 1. Recebe a categoria como prop
 export default function ListaProdutos({ categoria }: { categoria: string }) {
-  const [produtos, setProdutos] = useState([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,9 +42,10 @@ export default function ListaProdutos({ categoria }: { categoria: string }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-      {Array.isArray(produtos) && produtos.map((produto: any) => (
-        <div 
-          key={produto.id} 
+      {Array.isArray(produtos) && produtos.map((produto) => (
+        <Link
+          href={`/produtos/${produto.id}`}
+          key={produto.id}
           className="relative flex flex-col justify-between rounded-3xl bg-white p-5 shadow-sm transition hover:shadow-md"
         >
           {/* Badge da Loja usando produto.loja?.nome */}
@@ -53,7 +56,7 @@ export default function ListaProdutos({ categoria }: { categoria: string }) {
           {/* Imagem do Produto */}
           <div className="my-4 flex h-36 w-full items-center justify-center">
             <img 
-              src={produto.fotoUrl || "/images/placeholder.png"} 
+              src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"} 
               alt={produto.nome} 
               className="max-h-full object-contain"
             />
@@ -69,7 +72,7 @@ export default function ListaProdutos({ categoria }: { categoria: string }) {
               {produto.estoque > 0 ? 'DISPONÍVEL' : 'INDISPONÍVEL'}
             </span>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
