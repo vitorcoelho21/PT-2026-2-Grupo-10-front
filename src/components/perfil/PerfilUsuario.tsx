@@ -7,6 +7,8 @@ import { isAxiosError } from "axios";
 import { ChevronLeft, Mail, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
+import AvaliacoesDoUsuario from "@/components/perfil/AvaliacoesDoUsuario";
+import LojasDoUsuario from "@/components/perfil/LojasDoUsuario";
 import { getMe } from "@/services/authService";
 import { getLojas, Loja } from "@/services/lojaService";
 import { getProdutos } from "@/services/produtoService";
@@ -24,23 +26,23 @@ export default function PerfilUsuario({ id }: { id?: number }) {
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [erro, setErro] = useState("");
+  const [lojas, setLojas] = useState<Loja[] | null>(null);
   const [produtos, setProdutos] = useState<Produto[] | null>(null);
   const [erroProdutos, setErroProdutos] = useState("");
   const idUsuario = usuario?.id;
 
+  // Lojas de que o usuário é dono e, a partir delas, os produtos
   useEffect(() => {
     if (idUsuario === undefined) return;
 
     getLojas()
-      .then((lojas: Loja[]) =>
-        Promise.all(
-          lojas
-            .filter((loja) => loja.usuarioId === idUsuario)
-            .map((loja) => getProdutos({ lojaId: loja.id })),
-        ),
-      )
+      .then((todas: Loja[]) => {
+        const minhas = todas.filter((loja) => loja.usuarioId === idUsuario);
+        setLojas(minhas);
+        return Promise.all(minhas.map((loja) => getProdutos({ lojaId: loja.id })));
+      })
       .then((listas) => setProdutos(listas.flat()))
-      .catch((err) => setErroProdutos(extrairMensagemErro(err, "Não foi possível carregar os produtos.")));
+      .catch((err) => setErroProdutos(extrairMensagemErro(err, "Não foi possível carregar as lojas e produtos.")));
   }, [idUsuario]);
 
   useEffect(() => {
@@ -158,6 +160,10 @@ export default function PerfilUsuario({ id }: { id?: number }) {
             )}
           </section>
         )}
+
+        {usuario && <LojasDoUsuario lojas={lojas} erro={lojas ? "" : erroProdutos} />}
+
+        {usuario && <AvaliacoesDoUsuario usuarioId={usuario.id} />}
       </div>
     </main>
   );
