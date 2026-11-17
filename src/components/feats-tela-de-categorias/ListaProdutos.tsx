@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Produto } from "@/types/produto";
 
 interface ListaProdutosProps {
   categoria?: string; // sem categoria = busca em todos os produtos (usado na home)
@@ -59,9 +61,10 @@ export default function ListaProdutos({ categoria, busca = "" }: ListaProdutosPr
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-      {Array.isArray(produtos) && produtos.map((produto: any) => (
-        <div 
-          key={produto.id} 
+      {Array.isArray(produtos) && produtos.map((produto) => (
+        <Link
+          href={`/produtos/${produto.id}`}
+          key={produto.id}
           className="relative flex flex-col justify-between rounded-3xl bg-white p-5 shadow-sm transition hover:shadow-md"
         >
           {/* Badge da Loja usando produto.loja?.nome */}
@@ -72,7 +75,7 @@ export default function ListaProdutos({ categoria, busca = "" }: ListaProdutosPr
           {/* Imagem do Produto */}
           <div className="my-4 flex h-36 w-full items-center justify-center">
             <img 
-              src={produto.fotoUrl || "/images/placeholder.png"} 
+              src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"} 
               alt={produto.nome} 
               className="max-h-full object-contain"
             />
@@ -88,7 +91,7 @@ export default function ListaProdutos({ categoria, busca = "" }: ListaProdutosPr
               {produto.estoque > 0 ? 'DISPONÍVEL' : 'INDISPONÍVEL'}
             </span>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

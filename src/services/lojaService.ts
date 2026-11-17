@@ -11,6 +11,8 @@ export interface LojaData {
 export interface Loja extends LojaData {
   id: number;
   usuarioId: number;
+  // Só vem no GET /lojas: categoria com mais produtos da loja (null se não tem produtos)
+  categoriaPrincipal?: { id: number; nome: string } | null;
 }
 
 export const getLojas = async () => (await api.get('/lojas')).data;

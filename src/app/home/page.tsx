@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/home/SearchBar";
 import CategoriasCarrossel from "@/components/home/CategoriasCarrossel";
 import SecaoProdutosDestaque from "@/components/home/SecaoProdutosDestaque";
+import SecaoLojas from "@/components/home/SecaoLojas";
 import Fantoche from "@/components/home/Fantoche";
 import ListaProdutos from "@/components/feats-tela-de-categorias/ListaProdutos";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -51,13 +52,14 @@ export default function DashboardPage() {
                 <CategoriasCarrossel />
               </div>
           
-              {/* Secções de Produtos */}
-              <SecaoProdutosDestaque tituloDestaque="em Mercado" categoria="mercado" />
-              <SecaoProdutosDestaque tituloDestaque="em Beleza" categoria="beleza" />
-              <SecaoProdutosDestaque tituloDestaque="em Moda" categoria="moda" />
-              <SecaoProdutosDestaque tituloDestaque="em Eletrônicos" categoria="eletronicos" />
-            </>
-          )}
+          {/* Secções de Produtos */}
+          <SecaoProdutosDestaque tituloDestaque="em Mercado" categoria="mercado" />
+          <SecaoProdutosDestaque tituloDestaque="em Beleza" categoria="beleza" />
+          <SecaoProdutosDestaque tituloDestaque="em Moda" categoria="moda" />
+          <SecaoProdutosDestaque tituloDestaque="em Eletrônicos" categoria="eletronicos" />
+
+          {/* Lojas */}
+          <SecaoLojas />
         </div>
       </div>
   );
