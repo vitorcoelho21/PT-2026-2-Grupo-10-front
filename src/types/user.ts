@@ -44,3 +44,13 @@ export interface UsuarioLogado {
   iat?: number; // quando o token foi criado
   exp?: number; // quando o token expira
 }
+
+// Corpo do PATCH /user/:id (atualização)
+export interface updateFormato {
+  username?: string;
+  nome?: string;
+  email?: string;
+  senhaAtual?: string; // obrigatória se senhaHash for enviada
+  senhaHash?: string;  // nova senha em texto puro (o back faz o hash)
+  fotoPerfilUrl?: string;
+}
