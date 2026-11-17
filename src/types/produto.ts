@@ -45,4 +45,6 @@ export interface AvaliacaoProduto {
   updatedAt: string;
   usuario: { id: number; username: string; nome: string; fotoPerfilUrl: string | null };
   _count?: { comentarios: number };
+  // Produto avaliado (nome, loja e imagem principal). Vem na listagem do GET /reviews.
+  produto?: { id: number; nome: string; loja: { id: number; nome: string }; imagens: ImagemProduto[] };
 }

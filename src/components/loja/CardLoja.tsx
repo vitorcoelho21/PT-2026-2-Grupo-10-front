@@ -6,7 +6,13 @@ import Link from "next/link";
 import { Loja } from "@/services/lojaService";
 
 // Logo redondo da loja. Se não houver logo, ou a URL estiver quebrada, mostra a inicial.
-export function LogoLoja({ loja, tamanhoInicial = "text-5xl" }: { loja: Loja; tamanhoInicial?: string }) {
+export function LogoLoja({
+  loja,
+  tamanhoInicial = "text-5xl",
+}: {
+  loja: { nome: Loja["nome"]; logoUrl?: string | null };
+  tamanhoInicial?: string;
+}) {
   const [erroImagem, setErroImagem] = useState(false);
 
   if (loja.logoUrl && !erroImagem) {
