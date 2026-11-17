@@ -1,13 +1,13 @@
 import { categorias } from "@/components/home/CategoriasCarrossel";
 
-interface CategoriasLojasProps {
+interface CategoriasFiltroProps {
   selecionada: string | null;
   onSelecionar: (categoria: string | null) => void;
 }
 
-// Carrossel de categorias da tela de lojas (fundo preto).
-// Em vez de navegar, clicar numa categoria filtra as lojas; clicar de novo limpa o filtro.
-export default function CategoriasLojas({ selecionada, onSelecionar }: CategoriasLojasProps) {
+// Carrossel de categorias das telas de lojas e de produtos (fundo preto).
+// Em vez de navegar, clicar numa categoria filtra a lista; clicar de novo limpa o filtro.
+export default function CategoriasFiltro({ selecionada, onSelecionar }: CategoriasFiltroProps) {
   return (
     <section className="px-4 pt-10 md:px-24">
       <h2 className="mb-6 text-2xl font-bold text-[#FDF8EE]">Categoria</h2>

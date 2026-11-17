@@ -5,15 +5,11 @@ import { ChevronDown, Search, X } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import CardLoja from "@/components/loja/CardLoja";
-import CategoriasLojas from "@/components/lojas/CategoriasLojas";
+import CategoriasFiltro from "@/components/categorias/CategoriasFiltro";
 import { categorias } from "@/components/home/CategoriasCarrossel";
 import { useDebounce } from "@/hooks/useDebounce";
 import { getLojas, Loja } from "@/services/lojaService";
-
-// "Eletrônicos" -> "eletronicos", para comparar nomes vindos do back com os do front
-function normalizar(texto: string) {
-  return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-}
+import { normalizar } from "@/utils/texto";
 
 export default function LojasPage() {
   const [lojas, setLojas] = useState<Loja[] | null>(null); // null = carregando
@@ -47,7 +43,7 @@ export default function LojasPage() {
     <div className="min-h-screen bg-black font-sans">
       <div className="pb-16">
         <Navbar />
-        <CategoriasLojas selecionada={categoria} onSelecionar={setCategoria} />
+        <CategoriasFiltro selecionada={categoria} onSelecionar={setCategoria} />
       </div>
 
       <main className="min-h-[60vh] bg-[#FDF8EE] px-4 py-10 md:px-24">
