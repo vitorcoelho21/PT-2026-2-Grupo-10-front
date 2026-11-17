@@ -186,7 +186,13 @@ export default function PerfilUsuario({ id }: { id?: number }) {
         )}
       </div>
 
-      {modalAberto && usuario && <ModaisConta usuario={usuario} onFechar={() => setModalAberto(false)} />}
+      {modalAberto && usuario && (
+        <ModaisConta
+          usuario={usuario}
+          onFechar={() => setModalAberto(false)}
+          onUsuarioAtualizado={(atualizado) => setUsuario(atualizado)}
+        />
+      )}
     </main>
   );
 }

@@ -4,8 +4,11 @@ export function extrairMensagemErro(
     err: unknown,
     padrao = "Ocorreu um erro. Tente novamente.",
 ): string {
-    // Se não for um erro do axios, é algo inesperado: mostramos a mensagem padrão.
-    if (!isAxiosError(err)) return padrao;
+    // Se não for um erro do axios mas for uma instância de Error, devolvemos a mensagem dele.
+    if (!isAxiosError(err)) {
+        if (err instanceof Error && err.message) return err.message;
+        return padrao;
+    }
 
     // Não houve resposta do servidor: back-end desligado ou sem internet.
     if (!err.response) return "Erro de conexão. Tente novamente.";

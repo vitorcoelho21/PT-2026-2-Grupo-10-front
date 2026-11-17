@@ -1,30 +1,40 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Camera, User } from "lucide-react";
 
 import CampoModal from "@/components/perfil/CampoModal";
-import { Usuario } from "@/types/user";
+import { deleteUser, updateUser } from "@/services/userService";
+import { updateFormato, Usuario } from "@/types/user";
+import { extrairMensagemErro } from "@/utils/erros";
+import { clearToken } from "@/utils/token";
 
 type Props = {
   usuario: Usuario;
   onAlterarSenha: () => void; // troca para a tela "Alterar senha"
+  onAtualizado?: (usuarioAtualizado: Usuario) => void;
+  onFechar?: () => void;
 };
 
 // Conteúdo do modal "Editar perfil". A casca (fundo, X) vem do <Modal>.
-export default function ModalEditarPerfil({ usuario, onAlterarSenha }: Props) {
+export default function ModalEditarPerfil({ usuario, onAlterarSenha, onAtualizado, onFechar }: Props) {
+  const router = useRouter();
   const inputArquivoRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     nome: usuario.nome,
     username: usuario.username,
     email: usuario.email,
+    fotoPerfilUrl: usuario.fotoPerfilUrl ?? "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
 
-  // Foto escolhida pela pessoa: guardamos o arquivo (para enviar depois) e uma prévia local.
+  // Foto escolhida pela pessoa: guardamos o arquivo (para prévia) ou usamos a URL informada.
   const [, setArquivoFoto] = useState<File | null>(null);
   const [previaFoto, setPreviaFoto] = useState<string | null>(null);
-  const fotoExibida = previaFoto ?? usuario.fotoPerfilUrl;
+  const fotoExibida = previaFoto ?? (form.fotoPerfilUrl.trim() || usuario.fotoPerfilUrl);
 
   // Libera da memória a prévia anterior quando troca de foto e quando o modal fecha.
   useEffect(() => {
@@ -35,6 +45,14 @@ export default function ModalEditarPerfil({ usuario, onAlterarSenha }: Props) {
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name] || errors.geral) {
+      setErrors((atuais) => {
+        const novos = { ...atuais };
+        delete novos[e.target.name];
+        delete novos.geral;
+        return novos;
+      });
+    }
   }
 
   function handleEscolherFoto(e: ChangeEvent<HTMLInputElement>) {
@@ -63,22 +81,69 @@ export default function ModalEditarPerfil({ usuario, onAlterarSenha }: Props) {
       newErrors.email = "Email inválido. Use o formato correto (ex: nome@email.com).";
     }
 
+    if (form.fotoPerfilUrl && form.fotoPerfilUrl.trim().length > 255) {
+      newErrors.fotoPerfilUrl = "A URL da foto deve ter no máximo 255 caracteres.";
+    }
+
     return newErrors;
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    // TODO(integração): enviar form (e o arquivo da foto, guardado em arquivoFoto) ao back-end
-    // e atualizar o usuário exibido na página com o resultado.
+    setLoading(true);
+    setMensagemSucesso("");
+
+    try {
+      const payload: updateFormato = {
+        nome: form.nome.trim(),
+        username: form.username.trim(),
+        email: form.email.trim(),
+        fotoPerfilUrl: form.fotoPerfilUrl.trim() || undefined,
+      };
+
+      const usuarioAtualizado = await updateUser(usuario.id, payload);
+      setMensagemSucesso("Perfil atualizado com sucesso!");
+
+      onAtualizado?.(usuarioAtualizado);
+
+      setTimeout(() => {
+        onFechar?.();
+      }, 1000);
+    } catch (err: unknown) {
+      const msg = extrairMensagemErro(err, "Não foi possível atualizar o perfil.");
+      if (msg.toLowerCase().includes("username")) {
+        setErrors((atuais) => ({ ...atuais, username: msg }));
+      } else if (msg.toLowerCase().includes("email")) {
+        setErrors((atuais) => ({ ...atuais, email: msg }));
+      } else {
+        setErrors((atuais) => ({ ...atuais, geral: msg }));
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function handleDeletarConta() {
-    // TODO(integração): deletar a conta (idealmente pedindo confirmação antes), limpar o token e ir para /home.
+  async function handleDeletarConta() {
+    const confirmou = window.confirm(
+      "Tem certeza que deseja deletar sua conta? Esta ação é irreversível.",
+    );
+    if (!confirmou) return;
+
+    setLoading(true);
+    try {
+      await deleteUser(usuario.id);
+      clearToken();
+      router.push("/login");
+    } catch (err: unknown) {
+      const msg = extrairMensagemErro(err, "Não foi possível deletar a conta.");
+      setErrors((atuais) => ({ ...atuais, geral: msg }));
+      setLoading(false);
+    }
   }
 
   return (
@@ -118,13 +183,21 @@ export default function ModalEditarPerfil({ usuario, onAlterarSenha }: Props) {
       </p>
 
       <div className="mt-4 flex w-full flex-col gap-4">
-        <CampoModal name="nome" label="Nome" value={form.nome} onChange={handleChange} error={errors.nome} />
+        <CampoModal
+          name="nome"
+          label="Nome"
+          value={form.nome}
+          onChange={handleChange}
+          error={errors.nome}
+          disabled={loading || Boolean(mensagemSucesso)}
+        />
         <CampoModal
           name="username"
           label="Username"
           value={form.username}
           onChange={handleChange}
           error={errors.username}
+          disabled={loading || Boolean(mensagemSucesso)}
         />
         <CampoModal
           name="email"
@@ -133,14 +206,36 @@ export default function ModalEditarPerfil({ usuario, onAlterarSenha }: Props) {
           value={form.email}
           onChange={handleChange}
           error={errors.email}
+          disabled={loading || Boolean(mensagemSucesso)}
+        />
+        <CampoModal
+          name="fotoPerfilUrl"
+          label="URL da Foto de Perfil"
+          value={form.fotoPerfilUrl}
+          onChange={handleChange}
+          error={errors.fotoPerfilUrl}
+          disabled={loading || Boolean(mensagemSucesso)}
         />
       </div>
+
+      {errors.geral && (
+        <p className="mt-4 text-center text-xs text-red-600" role="alert">
+          {errors.geral}
+        </p>
+      )}
+
+      {mensagemSucesso && (
+        <p className="mt-4 text-center text-xs font-medium text-green-600" role="status">
+          {mensagemSucesso}
+        </p>
+      )}
 
       <div className="mt-12 flex w-full max-w-[373px] flex-col gap-2.5 md:mt-16">
         <button
           type="button"
           onClick={handleDeletarConta}
-          className="rounded-full border border-[#A8062B] py-3 text-base font-medium text-[#A8062B] transition hover:bg-[#A8062B] hover:text-white"
+          disabled={loading || Boolean(mensagemSucesso)}
+          className="rounded-full border border-[#A8062B] py-3 text-base font-medium text-[#A8062B] transition hover:bg-[#A8062B] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           Deletar conta
         </button>
@@ -148,16 +243,18 @@ export default function ModalEditarPerfil({ usuario, onAlterarSenha }: Props) {
         <button
           type="button"
           onClick={onAlterarSenha}
-          className="rounded-full border border-[#6A38F3] py-3 text-base font-medium text-[#6A38F3] transition hover:bg-[#6A38F3] hover:text-white"
+          disabled={loading || Boolean(mensagemSucesso)}
+          className="rounded-full border border-[#6A38F3] py-3 text-base font-medium text-[#6A38F3] transition hover:bg-[#6A38F3] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           Alterar senha
         </button>
 
         <button
           type="submit"
-          className="rounded-full bg-[#6A38F3] py-3 text-base font-medium text-white shadow-md transition hover:bg-[#7B4FF5]"
+          disabled={loading || Boolean(mensagemSucesso)}
+          className="rounded-full bg-[#6A38F3] py-3 text-base font-medium text-white shadow-md transition hover:bg-[#7B4FF5] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Salvar
+          {loading ? "Salvando..." : "Salvar"}
         </button>
       </div>
     </form>

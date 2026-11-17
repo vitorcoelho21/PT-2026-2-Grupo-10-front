@@ -1,8 +1,17 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import CampoModal from "@/components/perfil/CampoModal";
+import { changePassword } from "@/services/userService";
+import { extrairMensagemErro } from "@/utils/erros";
+import { clearToken } from "@/utils/token";
+
+type Props = {
+  usuarioId: number;
+  onSucesso?: () => void;
+};
 
 // Ícone de chave do design (desenhado em SVG para não depender de imagem externa).
 function IconeChave() {
@@ -20,12 +29,23 @@ function IconeChave() {
 }
 
 // Conteúdo do modal "Alterar senha". A casca (fundo, X, seta de voltar) vem do <Modal>.
-export default function ModalAlterarSenha() {
+export default function ModalAlterarSenha({ usuarioId, onSucesso }: Props) {
+  const router = useRouter();
   const [form, setForm] = useState({ senhaAntiga: "", novaSenha: "", confirmarSenha: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name] || errors.geral) {
+      setErrors((atuais) => {
+        const novos = { ...atuais };
+        delete novos[e.target.name];
+        delete novos.geral;
+        return novos;
+      });
+    }
   }
 
   function validate() {
@@ -51,15 +71,37 @@ export default function ModalAlterarSenha() {
     return newErrors;
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    // TODO(integração): enviar senhaAntiga e novaSenha ao back-end.
-    // Atenção: o interceptor de api.ts apaga o token e manda para /login se a senha trocada invalidar a sessão.
+    setLoading(true);
+    setMensagemSucesso("");
+
+    try {
+      await changePassword(usuarioId, form.senhaAntiga, form.novaSenha);
+      setMensagemSucesso("Senha alterada com sucesso! Redirecionando para o login...");
+      setForm({ senhaAntiga: "", novaSenha: "", confirmarSenha: "" });
+
+      // O backend incrementa a versão da senha e invalida a sessão anterior.
+      setTimeout(() => {
+        clearToken();
+        onSucesso?.();
+        router.push("/login");
+      }, 1500);
+    } catch (err: unknown) {
+      const msg = extrairMensagemErro(err, "Não foi possível alterar a senha.");
+      if (msg.toLowerCase().includes("senha atual incorreta")) {
+        setErrors({ senhaAntiga: "Senha atual incorreta." });
+      } else {
+        setErrors({ geral: msg });
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -77,6 +119,7 @@ export default function ModalAlterarSenha() {
           value={form.senhaAntiga}
           onChange={handleChange}
           error={errors.senhaAntiga}
+          disabled={loading || Boolean(mensagemSucesso)}
         />
         <CampoModal
           name="novaSenha"
@@ -86,6 +129,7 @@ export default function ModalAlterarSenha() {
           value={form.novaSenha}
           onChange={handleChange}
           error={errors.novaSenha}
+          disabled={loading || Boolean(mensagemSucesso)}
         />
         <CampoModal
           name="confirmarSenha"
@@ -95,14 +139,28 @@ export default function ModalAlterarSenha() {
           value={form.confirmarSenha}
           onChange={handleChange}
           error={errors.confirmarSenha}
+          disabled={loading || Boolean(mensagemSucesso)}
         />
       </div>
 
+      {errors.geral && (
+        <p className="mt-4 text-center text-xs text-red-600" role="alert">
+          {errors.geral}
+        </p>
+      )}
+
+      {mensagemSucesso && (
+        <p className="mt-4 text-center text-xs font-medium text-green-600" role="status">
+          {mensagemSucesso}
+        </p>
+      )}
+
       <button
         type="submit"
-        className="mt-16 w-full max-w-[373px] rounded-full bg-[#6A38F3] py-3 text-base font-medium text-white shadow-md transition hover:bg-[#7B4FF5] md:mt-24"
+        disabled={loading || Boolean(mensagemSucesso)}
+        className="mt-16 w-full max-w-[373px] rounded-full bg-[#6A38F3] py-3 text-base font-medium text-white shadow-md transition hover:bg-[#7B4FF5] disabled:cursor-not-allowed disabled:opacity-60 md:mt-24"
       >
-        Salvar Senha
+        {loading ? "Salvando..." : "Salvar Senha"}
       </button>
     </form>
   );
