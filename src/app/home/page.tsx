@@ -52,14 +52,16 @@ export default function DashboardPage() {
                 <CategoriasCarrossel />
               </div>
           
-          {/* Secções de Produtos */}
-          <SecaoProdutosDestaque tituloDestaque="em Mercado" categoria="mercado" />
-          <SecaoProdutosDestaque tituloDestaque="em Beleza" categoria="beleza" />
-          <SecaoProdutosDestaque tituloDestaque="em Moda" categoria="moda" />
-          <SecaoProdutosDestaque tituloDestaque="em Eletrônicos" categoria="eletronicos" />
+              {/* Secções de Produtos */}
+              <SecaoProdutosDestaque tituloDestaque="em Mercado" categoria="mercado" />
+              <SecaoProdutosDestaque tituloDestaque="em Beleza" categoria="beleza" />
+              <SecaoProdutosDestaque tituloDestaque="em Moda" categoria="moda" />
+              <SecaoProdutosDestaque tituloDestaque="em Eletrônicos" categoria="eletronicos" />
 
-          {/* Lojas */}
-          <SecaoLojas />
+              {/* Lojas */}
+              <SecaoLojas />
+            </>
+          )}
         </div>
       </div>
   );
