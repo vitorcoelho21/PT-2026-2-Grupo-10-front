@@ -9,7 +9,9 @@ interface CategoriasFiltroProps {
 // Em vez de navegar, clicar numa categoria filtra a lista; clicar de novo limpa o filtro.
 export default function CategoriasFiltro({ selecionada, onSelecionar }: CategoriasFiltroProps) {
   return (
-    <section className="px-4 pt-10 md:px-24">
+    // w-fit + mx-auto centraliza o bloco (título alinhado ao primeiro card);
+    // max-w-full faz a fileira rolar na horizontal quando não cabe na tela
+    <section className="mx-auto w-fit max-w-full px-4 pt-10 md:px-24">
       <h2 className="mb-6 text-2xl font-bold text-[#FDF8EE]">Categoria</h2>
 
       <div className="scrollbar-hide flex gap-6 overflow-x-auto pb-4 md:gap-12">

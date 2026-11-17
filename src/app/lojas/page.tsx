@@ -47,6 +47,8 @@ export default function LojasPage() {
       </div>
 
       <main className="min-h-[60vh] bg-[#FDF8EE] px-4 py-10 md:px-24">
+        {/* Mesma largura da fileira de categorias, para tudo ficar alinhado ao centro */}
+        <div className="mx-auto max-w-[1232px]">
         {/* Busca */}
         <div className="mb-6 flex md:justify-end">
           <div className="flex w-full items-center rounded-full bg-white px-5 py-3 text-sm shadow-sm md:max-w-2xl">
@@ -103,9 +105,9 @@ export default function LojasPage() {
         )}
 
         {lojasFiltradas.length > 0 && (
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <ul className="flex flex-wrap justify-center gap-x-10 gap-y-10 md:gap-x-16">
             {lojasFiltradas.map((loja) => (
-              <li key={loja.id} className="flex justify-center">
+              <li key={loja.id}>
                 <div className="w-28 md:w-32">
                   <CardLoja loja={loja} pequeno />
                 </div>
@@ -113,6 +115,7 @@ export default function LojasPage() {
             ))}
           </ul>
         )}
+        </div>
       </main>
     </div>
   );
