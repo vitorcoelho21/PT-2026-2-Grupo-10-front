@@ -1,7 +1,5 @@
 import Navbar from "@/components/Navbar";
-import SearchBar from "@/components/home/SearchBar";
-import FiltrosCategoria from "@/components/feats-tela-de-categorias/FiltrosCategoria"; 
-import ListaProdutos from "@/components/feats-tela-de-categorias/ListaProdutos";
+import ConteudoCategoria from "@/components/feats-tela-de-categorias/ConteudoCategoria";
 
 // Dicionário para mapear os textos de destaque de cada categoria
 const titulosDestaque: Record<string, { linha1: string; linha2: string }> = {
@@ -46,20 +44,8 @@ export default async function PaginaCategoriaTemplate({ params }: { params: Prom
         </div>
       </div>
 
-      {/* Barra de Pesquisa */}
-      <div className="relative z-30 mt-12 max-w-4xl px-8 ml-[800px] md:px-16">
-        <SearchBar />
-      </div>
-
-        {/* Filtros e Ordenação */}
-      <div className="relative z-30 -mt-20 flex w-full items-center justify-between px-8 py-4 md:px-16 -ml-100">
-        <FiltrosCategoria categoria={categoriaSlug} />
-      </div>
-
-      {/* Grelha de Produtos vindos do Banco de Dados */}
-      <div className="px-8 pb-16 md:px-16">
-        <ListaProdutos categoria={categoriaSlug} />
-      </div>
+      {/* Busca, filtros e produtos */}
+      <ConteudoCategoria categoria={categoriaSlug} />
     </div>
   );
 }
