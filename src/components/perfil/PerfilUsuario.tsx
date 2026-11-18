@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
-import { ChevronLeft, Mail, Package, User } from "lucide-react";
+import { ChevronLeft, Mail, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import ModaisConta from "@/components/perfil/ModaisConta";
+import AvaliacoesDoUsuario from "@/components/perfil/AvaliacoesDoUsuario";
+import LojasDoUsuario from "@/components/perfil/LojasDoUsuario";
 import { getMe } from "@/services/authService";
 import { getLojas, Loja } from "@/services/lojaService";
 import { getProdutos } from "@/services/produtoService";
@@ -24,6 +27,7 @@ export default function PerfilUsuario({ id }: { id?: number }) {
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [erro, setErro] = useState("");
+  const [lojas, setLojas] = useState<Loja[] | null>(null);
   const [produtos, setProdutos] = useState<Produto[] | null>(null);
   const [erroProdutos, setErroProdutos] = useState("");
   const idUsuario = usuario?.id;
@@ -35,19 +39,18 @@ export default function PerfilUsuario({ id }: { id?: number }) {
   // O botão "Editar Perfil" só aparece se há alguém logado E o perfil exibido é o dele.
   const ehMeuPerfil = idLogado !== null && idUsuario === idLogado;
 
+  // Lojas de que o usuário é dono e, a partir delas, os produtos
   useEffect(() => {
     if (idUsuario === undefined) return;
 
     getLojas()
-      .then((lojas: Loja[]) =>
-        Promise.all(
-          lojas
-            .filter((loja) => loja.usuarioId === idUsuario)
-            .map((loja) => getProdutos({ lojaId: loja.id })),
-        ),
-      )
+      .then((todas: Loja[]) => {
+        const minhas = todas.filter((loja) => loja.usuarioId === idUsuario);
+        setLojas(minhas);
+        return Promise.all(minhas.map((loja) => getProdutos({ lojaId: loja.id })));
+      })
       .then((listas) => setProdutos(listas.flat()))
-      .catch((err) => setErroProdutos(extrairMensagemErro(err, "Não foi possível carregar os produtos.")));
+      .catch((err) => setErroProdutos(extrairMensagemErro(err, "Não foi possível carregar as lojas e produtos.")));
   }, [idUsuario]);
 
   useEffect(() => {
@@ -162,28 +165,41 @@ export default function PerfilUsuario({ id }: { id?: number }) {
             {produtos && produtos.length > 0 && (
               <ul className="flex gap-4 overflow-x-auto pb-4">
                 {produtos.map((produto) => (
-                  <li key={produto.id} className="flex w-44 shrink-0 flex-col rounded-3xl bg-white p-4 md:w-52">
-                    <div className="mb-3 flex h-28 items-center justify-center rounded-2xl bg-[#F6F3E4] md:h-32">
-                      <Package className="h-10 w-10 text-[#6A38F3]" />
-                    </div>
-                    <p className="truncate text-sm font-bold text-black" title={produto.nome}>
-                      {produto.nome}
-                    </p>
-                    <p className="text-sm font-bold text-black">{formatarPreco(produto.preco)}</p>
-                    <p className="truncate text-xs text-gray-500">{produto.loja.nome}</p>
-                    <span
-                      className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${
-                        produto.estoque > 0 ? "text-[#6A38F3]" : "text-red-500"
-                      }`}
+                  <li key={produto.id} className="w-44 shrink-0 md:w-52">
+                    <Link
+                      href={`/produtos/${produto.id}`}
+                      className="flex h-full flex-col rounded-3xl bg-white p-4 transition hover:shadow-md"
                     >
-                      {produto.estoque > 0 ? `${produto.estoque} em estoque` : "Esgotado"}
-                    </span>
+                      <div className="mb-3 flex h-28 items-center justify-center overflow-hidden rounded-2xl bg-white md:h-32">
+                        <img
+                          src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"}
+                          alt={produto.nome}
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                      <p className="truncate text-sm font-bold text-black" title={produto.nome}>
+                        {produto.nome}
+                      </p>
+                      <p className="text-sm font-bold text-black">{formatarPreco(produto.preco)}</p>
+                      <p className="truncate text-xs text-gray-500">{produto.loja.nome}</p>
+                      <span
+                        className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${
+                          produto.estoque > 0 ? "text-[#6A38F3]" : "text-red-500"
+                        }`}
+                      >
+                        {produto.estoque > 0 ? `${produto.estoque} em estoque` : "Esgotado"}
+                      </span>
+                    </Link>
                   </li>
                 ))}
               </ul>
             )}
           </section>
         )}
+
+        {usuario && <LojasDoUsuario lojas={lojas} erro={lojas ? "" : erroProdutos} />}
+
+        {usuario && <AvaliacoesDoUsuario usuarioId={usuario.id} />}
       </div>
 
       {modalAberto && usuario && (
