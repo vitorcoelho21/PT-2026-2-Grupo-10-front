@@ -8,7 +8,12 @@ export interface Produto {
   estoque: number;
   createdAt: string;
   updatedAt: string;
-  categoria: { id: number; nome: string };
+  categoria: {
+    id: number;
+    nome: string;
+    categoriaPaiId?: number | null;
+    categoriaPai?: { id: number; nome: string } | null;
+  };
   // logoUrl ou stickerUrl da loja para o badge do produto
   loja: { id: number; nome: string; logoUrl?: string | null; stickerUrl?: string | null };
   // No GET /products vem só a imagem principal; no GET /products/:id vêm todas
