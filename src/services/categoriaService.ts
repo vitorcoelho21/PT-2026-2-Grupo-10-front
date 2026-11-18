@@ -6,7 +6,7 @@ export interface Categoria {
   categoriaPaiId: number | null;
 }
 
-export const getCategorias = async () => {
-  const response = await api.get<Categoria[]>('/categories');
+export const getCategorias = async (params?: { raiz?: boolean; nome?: string }) => {
+  const response = await api.get<Categoria[]>('/categories', { params });
   return response.data;
 };
