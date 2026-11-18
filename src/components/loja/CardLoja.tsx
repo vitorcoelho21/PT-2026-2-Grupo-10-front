@@ -29,18 +29,23 @@ export function LogoLoja({
   return <span className={`${tamanhoInicial} font-bold uppercase text-white`}>{loja.nome.charAt(0)}</span>;
 }
 
-// Card de loja (logo redondo, nome e categoria principal). Usado na home e no perfil.
-export default function CardLoja({ loja }: { loja: Loja }) {
+// Card de loja (logo redondo, nome e categoria principal). Usado na home, no perfil e na tela de lojas.
+// `pequeno` deixa logo e textos menores (tela de lojas).
+export default function CardLoja({ loja, pequeno = false }: { loja: Loja; pequeno?: boolean }) {
+  const tamanhoLogo = pequeno ? "h-28 w-28 md:h-32 md:w-32" : "h-40 w-40 md:h-44 md:w-44";
+  const tamanhoNome = pequeno ? "text-base" : "text-xl";
+  const tamanhoCategoria = pequeno ? "text-sm" : "text-lg";
+
   return (
     <Link href={`/lojas/${loja.id}`} className="group flex flex-col items-center text-center">
-      <div className="mb-3 flex h-40 w-40 items-center justify-center overflow-hidden rounded-full bg-[#6A38F3] shadow-sm transition group-hover:scale-105 md:h-44 md:w-44">
-        <LogoLoja loja={loja} />
+      <div className={`mb-3 flex ${tamanhoLogo} items-center justify-center overflow-hidden rounded-full bg-[#6A38F3] shadow-sm transition group-hover:scale-105`}>
+        <LogoLoja loja={loja} tamanhoInicial={pequeno ? "text-4xl" : "text-5xl"} />
       </div>
-      <span className="w-full truncate text-xl text-black" title={loja.nome}>
+      <span className={`w-full truncate ${tamanhoNome} text-black`} title={loja.nome}>
         {loja.nome}
       </span>
       {loja.categoriaPrincipal && (
-        <span className="text-lg lowercase leading-tight text-[#6A38F3]">{loja.categoriaPrincipal.nome}</span>
+        <span className={`${tamanhoCategoria} lowercase leading-tight text-[#6A38F3]`}>{loja.categoriaPrincipal.nome}</span>
       )}
     </Link>
   );
