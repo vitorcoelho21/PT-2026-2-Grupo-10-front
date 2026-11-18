@@ -10,6 +10,7 @@ import Navbar from "@/components/Navbar";
 import ModaisConta from "@/components/perfil/ModaisConta";
 import AvaliacoesDoUsuario from "@/components/perfil/AvaliacoesDoUsuario";
 import LojasDoUsuario from "@/components/perfil/LojasDoUsuario";
+import ModalLoja from "@/components/loja/ModalLoja";
 import { getMe } from "@/services/authService";
 import { getLojas, Loja } from "@/services/lojaService";
 import { getProdutos } from "@/services/produtoService";
@@ -35,6 +36,7 @@ export default function PerfilUsuario({ id }: { id?: number }) {
   // Id de quem está logado (null = ninguém logado, ou ainda não sabemos).
   const [idLogado, setIdLogado] = useState<number | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
+  const [criandoLoja, setCriandoLoja] = useState(false);
 
   // O botão "Editar Perfil" só aparece se há alguém logado E o perfil exibido é o dele.
   const ehMeuPerfil = idLogado !== null && idUsuario === idLogado;
@@ -197,10 +199,26 @@ export default function PerfilUsuario({ id }: { id?: number }) {
           </section>
         )}
 
-        {usuario && <LojasDoUsuario lojas={lojas} erro={lojas ? "" : erroProdutos} />}
+        {usuario && (
+          <LojasDoUsuario
+            lojas={lojas}
+            erro={lojas ? "" : erroProdutos}
+            onAdicionar={ehMeuPerfil ? () => setCriandoLoja(true) : undefined}
+          />
+        )}
 
         {usuario && <AvaliacoesDoUsuario usuarioId={usuario.id} />}
       </div>
+
+      {criandoLoja && (
+        <ModalLoja
+          onSalva={(nova) => {
+            setLojas((atuais) => [...(atuais ?? []), nova]);
+            setCriandoLoja(false);
+          }}
+          onFechar={() => setCriandoLoja(false)}
+        />
+      )}
 
       {modalAberto && usuario && (
         <ModaisConta

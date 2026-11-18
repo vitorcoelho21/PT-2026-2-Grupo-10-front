@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Pencil, Star, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
+import ModalLoja from "@/components/loja/ModalLoja";
 import CardAvaliacao from "@/components/perfil/CardAvaliacao";
 import { getMe } from "@/services/authService";
 import { AvaliacaoLoja, getAvaliacoesDaLoja, getLojas, Loja } from "@/services/lojaService";
@@ -47,12 +49,14 @@ function Estrelas({ nota, tamanho }: { nota: number; tamanho: string }) {
 }
 
 export default function PaginaLoja({ id }: { id: number }) {
+  const router = useRouter();
   const [loja, setLoja] = useState<Loja | null>(null);
   const [erro, setErro] = useState("");
   const [avaliacoes, setAvaliacoes] = useState<AvaliacaoLoja[] | null>(null);
   const [erroAvaliacoes, setErroAvaliacoes] = useState("");
   const [nomeDono, setNomeDono] = useState("");
   const [idLogado, setIdLogado] = useState<number | null>(null);
+  const [editando, setEditando] = useState(false);
   const idDono = loja?.usuarioId;
 
   useEffect(() => {
@@ -117,14 +121,15 @@ export default function PaginaLoja({ id }: { id: number }) {
             )}
 
             {ehDono && (
-              <Link
-                href={`/lojas/${loja.id}/editar`}
+              <button
+                type="button"
+                onClick={() => setEditando(true)}
                 title="Editar loja"
                 aria-label="Editar loja"
                 className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#6A38F3] text-white shadow-md transition hover:bg-[#7B4FF5] md:right-8 md:top-6"
               >
                 <Pencil className="h-5 w-5" />
-              </Link>
+              </button>
             )}
           </>
         )}
@@ -171,6 +176,18 @@ export default function PaginaLoja({ id }: { id: number }) {
           </ul>
         )}
       </div>
+
+      {editando && loja && (
+        <ModalLoja
+          loja={loja}
+          onSalva={(atualizada) => {
+            setLoja(atualizada);
+            setEditando(false);
+          }}
+          onDeletada={() => router.replace("/perfil")}
+          onFechar={() => setEditando(false)}
+        />
+      )}
     </main>
   );
 }
