@@ -47,3 +47,8 @@ export const getAvaliacoesLojaDoUsuario = async (usuarioId: number) => {
   const response = await api.get<AvaliacaoLoja[]>('/store-reviews', { params: { usuarioId } });
   return response.data;
 };
+
+export const getAvaliacoesDaLoja = async (lojaId: number) => {
+  const response = await api.get<AvaliacaoLoja[]>('/store-reviews', { params: { lojaId } });
+  return response.data;
+};
