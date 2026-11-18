@@ -65,3 +65,9 @@ export const getOpcoesCategorias = async () => {
   const response = await api.get<OpcaoCategoria[]>('/categories/opcoes');
   return response.data;
 };
+
+// GET /reviews?usuarioId= — avaliações de produto feitas por um usuário (mais novas primeiro)
+export const getAvaliacoesDoUsuario = async (usuarioId: number) => {
+  const response = await api.get<AvaliacaoProduto[]>('/reviews', { params: { usuarioId } });
+  return response.data;
+};
