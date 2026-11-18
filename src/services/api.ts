@@ -32,10 +32,14 @@ api.interceptors.response.use(
     (resposta) => resposta,
     (erro) => {
         const veioDoLogin = erro.config?.url?.includes("/auth/login");
+        const mensagem = erro.response?.data?.message;
+        const ehSenhaIncorreta =
+            mensagem === "Senha atual incorreta" ||
+            (Array.isArray(mensagem) && mensagem.includes("Senha atual incorreta"));
 
-        // 401 em qualquer rota (menos o login) significa: "seu token não vale mais".
+        // 401 em qualquer rota (menos o login e erro de senha atual na troca de senha) significa: "seu token não vale mais".
         // Isso acontece quando ele expira (1 dia) ou quando a senha é trocada.
-        if (erro.response?.status === 401 && !veioDoLogin && getToken()) {
+        if (erro.response?.status === 401 && !veioDoLogin && !ehSenhaIncorreta && getToken()) {
             clearToken();
             window.location.href = "/login";
         }

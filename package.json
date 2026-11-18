@@ -27,5 +27,8 @@
   },
   "optionalDependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "^4.3.3"
+  },
+  "allowScripts": {
+    "unrs-resolver@1.12.2": true
   }
 }

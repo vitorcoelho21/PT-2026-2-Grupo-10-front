@@ -1,40 +1,58 @@
-import { CadastroFormato, Usuario } from '@/types/user';
+import axios from 'axios';
+import { CadastroFormato, updateFormato, Usuario } from '@/types/user';
 import api from './api';
+
+// Extrai a mensagem de erro que o NestJS devolve ({ message: string | string[] })
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (axios.isAxiosError(error)) {
+    const message = error.response?.data?.message;
+    if (Array.isArray(message)) return message.join(' ');
+    if (typeof message === 'string') return message;
+  }
+  return fallback;
+};
 
 // 1. Cadastro
 export const registerUser = async (data: CadastroFormato) => {
   try {
-    const response = await api.post('/user', data);
+    const response = await api.post<Usuario>('/user', data);
     return response.data;
   } catch (error) {
     console.error('Erro ao cadastrar o usuário:', error);
-    throw error;
+    throw new Error(getErrorMessage(error, 'Não foi possível cadastrar o usuário.'));
   }
 };
 
-// 3. Buscar um usuário específico
+// 2. Buscar um usuário específico
 export const getUserById = async (id: number) => {
   const response = await api.get<Usuario>(`/user/${id}`);
   return response.data;
 };
 
-
-/*
-// 2. Buscar todos os usuários
-export const getAllUsers = async () => {
-  const response = await api.get('/user');
-  return response.data;
+// 3. Atualizar usuário (dados do perfil e/ou senha)
+export const updateUser = async (id: number, data: updateFormato) => {
+  try {
+    const response = await api.patch<Usuario>(`/user/${id}`, data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      throw new Error('Senha atual incorreta.');
+    }
+    throw new Error(getErrorMessage(error, 'Não foi possível atualizar o usuário.'));
+  }
 };
 
-// 4. Atualizar usuário
-export const updateUser = async (id: string, data: updateFormato) => {
-  const response = await api.patch(`/user/${id}`, data);
-  return response.data;
+// 4. Trocar apenas a senha (exige a senha atual)
+export const changePassword = async (
+  id: number,
+  senhaAtual: string,
+  senhaHash: string,
+) => {
+  return updateUser(id, { senhaAtual, senhaHash });
 };
 
 // 5. Deletar usuário
-export const deleteUser = async (id: string) => {
+export const deleteUser = async (id: number) => {
   const response = await api.delete(`/user/${id}`);
   return response.data;
 };
-*/

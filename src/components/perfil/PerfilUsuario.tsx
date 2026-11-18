@@ -7,6 +7,7 @@ import { isAxiosError } from "axios";
 import { ChevronLeft, Mail, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
+import ModaisConta from "@/components/perfil/ModaisConta";
 import AvaliacoesDoUsuario from "@/components/perfil/AvaliacoesDoUsuario";
 import LojasDoUsuario from "@/components/perfil/LojasDoUsuario";
 import { getMe } from "@/services/authService";
@@ -31,6 +32,13 @@ export default function PerfilUsuario({ id }: { id?: number }) {
   const [erroProdutos, setErroProdutos] = useState("");
   const idUsuario = usuario?.id;
 
+  // Id de quem está logado (null = ninguém logado, ou ainda não sabemos).
+  const [idLogado, setIdLogado] = useState<number | null>(null);
+  const [modalAberto, setModalAberto] = useState(false);
+
+  // O botão "Editar Perfil" só aparece se há alguém logado E o perfil exibido é o dele.
+  const ehMeuPerfil = idLogado !== null && idUsuario === idLogado;
+
   // Lojas de que o usuário é dono e, a partir delas, os produtos
   useEffect(() => {
     if (idUsuario === undefined) return;
@@ -46,7 +54,23 @@ export default function PerfilUsuario({ id }: { id?: number }) {
   }, [idUsuario]);
 
   useEffect(() => {
-    const buscarId = id !== undefined ? Promise.resolve(id) : getMe().then((me) => me.sub);
+    // Em /perfil (sem id) o perfil é o de quem está logado: o getMe já diz quem é.
+    const buscarId =
+      id !== undefined
+        ? Promise.resolve(id)
+        : getMe().then((me) => {
+            setIdLogado(me.sub);
+            return me.sub;
+          });
+
+    // Em /perfil/[id] é preciso perguntar quem está logado (se houver token) para
+    // comparar com o perfil exibido. Sem token, não há botão. Se a chamada falhar,
+    // o botão simplesmente não aparece (um 401 já é tratado pelo interceptor do api.ts).
+    if (id !== undefined && getToken()) {
+      getMe()
+        .then((me) => setIdLogado(me.sub))
+        .catch(() => {});
+    }
 
     buscarId
       .then((idUsuario) => {
@@ -91,24 +115,36 @@ export default function PerfilUsuario({ id }: { id?: number }) {
           </div>
         </div>
 
-        <section className="ml-10 mt-4 md:ml-12">
-          {erro && (
-            <p className="w-fit rounded-xl bg-red-500/10 px-4 py-2 text-sm text-red-600">{erro}</p>
-          )}
+        <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <section className="ml-10 md:ml-12">
+            {erro && (
+              <p className="w-fit rounded-xl bg-red-500/10 px-4 py-2 text-sm text-red-600">{erro}</p>
+            )}
 
-          {!erro && !usuario && <p className="text-sm text-gray-600">Carregando perfil...</p>}
+            {!erro && !usuario && <p className="text-sm text-gray-600">Carregando perfil...</p>}
 
-          {usuario && (
-            <>
-              <h1 className="text-2xl font-bold text-black md:text-3xl">{usuario.nome}</h1>
-              <p className="text-sm text-gray-600">@{usuario.username}</p>
-              <p className="mt-1 flex items-center gap-2 text-sm text-gray-600">
-                <Mail className="h-4 w-4" />
-                {usuario.email}
-              </p>
-            </>
+            {usuario && (
+              <>
+                <h1 className="text-2xl font-bold text-black md:text-3xl">{usuario.nome}</h1>
+                <p className="text-sm text-gray-600">@{usuario.username}</p>
+                <p className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+                  <Mail className="h-4 w-4" />
+                  {usuario.email}
+                </p>
+              </>
+            )}
+          </section>
+
+          {ehMeuPerfil && (
+            <button
+              type="button"
+              onClick={() => setModalAberto(true)}
+              className="ml-10 w-fit rounded-full bg-[#6A38F3] px-10 py-2.5 text-base font-medium text-white shadow-md transition hover:bg-[#7B4FF5] md:ml-0 md:w-80 md:px-0"
+            >
+              Editar Perfil
+            </button>
           )}
-        </section>
+        </div>
 
         {usuario && (
           <section className="mt-12">
@@ -165,6 +201,14 @@ export default function PerfilUsuario({ id }: { id?: number }) {
 
         {usuario && <AvaliacoesDoUsuario usuarioId={usuario.id} />}
       </div>
+
+      {modalAberto && usuario && (
+        <ModaisConta
+          usuario={usuario}
+          onFechar={() => setModalAberto(false)}
+          onUsuarioAtualizado={(atualizado) => setUsuario(atualizado)}
+        />
+      )}
     </main>
   );
 }
