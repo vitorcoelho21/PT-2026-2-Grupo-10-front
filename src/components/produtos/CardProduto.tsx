@@ -3,7 +3,7 @@ import Link from "next/link";
 import BadgeLoja from "@/components/produto/BadgeLoja";
 import { Produto } from "@/types/produto";
 
-function formatarPreco(preco: string) {
+function formatarPreco(preco: string | number) {
   return Number(preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
@@ -14,13 +14,13 @@ export default function CardProduto({ produto }: { produto: Produto }) {
   return (
     <Link
       href={`/produtos/${produto.id}`}
-      className="group relative flex h-full flex-col rounded-[28px] bg-white p-4 shadow-sm transition hover:shadow-md"
+      className="group relative flex h-full flex-col justify-between rounded-[28px] bg-white p-5 shadow-sm transition hover:shadow-md"
     >
-      <div className="absolute right-3 top-3 z-10">
+      <div className="absolute right-3.5 top-3.5 z-10">
         <BadgeLoja loja={produto.loja} />
       </div>
 
-      <div className="mb-3 flex aspect-square items-center justify-center">
+      <div className="mb-4 flex aspect-square items-center justify-center pt-2">
         <img
           src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"}
           alt={produto.nome}
@@ -28,13 +28,19 @@ export default function CardProduto({ produto }: { produto: Produto }) {
         />
       </div>
 
-      <h3 className="truncate text-base font-medium text-black" title={produto.nome}>
-        {produto.nome}
-      </h3>
-      <p className="text-base text-black">{formatarPreco(produto.preco)}</p>
-      <span className={`text-xs font-medium uppercase ${disponivel ? "text-[#A3C200]" : "text-[#C4003A]"}`}>
-        {disponivel ? "Disponível" : "Indisponível"}
-      </span>
+      <div>
+        <h3 className="truncate text-base font-medium text-black" title={produto.nome}>
+          {produto.nome}
+        </h3>
+        <p className="text-base font-semibold text-black">{formatarPreco(produto.preco)}</p>
+        <span
+          className={`mt-1 inline-block text-xs font-bold uppercase tracking-wide ${
+            disponivel ? "text-[#A3C200]" : "text-[#C4003A]"
+          }`}
+        >
+          {disponivel ? "Disponível" : "Indisponível"}
+        </span>
+      </div>
     </Link>
   );
 }

@@ -14,8 +14,10 @@ export default function CardLojaPerfil({ loja }: { loja: Loja }) {
         <p className="truncate text-base font-bold text-black" title={loja.nome}>
           {loja.nome}
         </p>
-        {loja.categoriaPrincipal && (
-          <p className="truncate text-sm lowercase text-[#6A38F3]">{loja.categoriaPrincipal.nome}</p>
+        {(loja.categoria?.nome || loja.categoriaPrincipal?.nome) && (
+          <p className="truncate text-sm lowercase text-[#6A38F3]">
+            {loja.categoria?.nome || loja.categoriaPrincipal?.nome}
+          </p>
         )}
       </div>
 
