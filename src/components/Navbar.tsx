@@ -45,8 +45,8 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-2.5 whitespace-nowrap text-xs font-bold uppercase text-white sm:gap-4 md:gap-8 md:text-sm">
-        <Link href="/" title="Início">
-          <IconeSacola className={`${ICONE} ${corIcone(pathname === "/" || pathname === "/feed")}`} />
+        <Link href="/produtos" title="Produtos">
+          <IconeSacola className={`${ICONE} ${corIcone(pathname.startsWith("/produtos"))}`} />
         </Link>
 
         <Link href="/lojas" title="Lojas">
