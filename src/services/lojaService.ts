@@ -2,10 +2,10 @@ import api from './api';
 
 export interface LojaData {
   nome: string;
-  descricao?: string;
-  logoUrl?: string;
-  bannerUrl?: string;
-  stickerUrl?: string;
+  descricao?: string | null;
+  logoUrl?: string | null;
+  bannerUrl?: string | null;
+  stickerUrl?: string | null;
 }
 
 export interface Loja extends LojaData {
@@ -36,9 +36,9 @@ export const getLoja = async (id: number) => {
   return response.data;
 };
 
-export const createLoja = async (data: LojaData) => api.post('/lojas', data);
+export const createLoja = async (data: LojaData) => api.post<Loja>('/lojas', data);
 
-export const updateLoja = async (id: number, data: Partial<LojaData>) => api.patch(`/lojas/${id}`, data);
+export const updateLoja = async (id: number, data: Partial<LojaData>) => api.patch<Loja>(`/lojas/${id}`, data);
 
 export const deleteLoja = async (id: number) => api.delete(`/lojas/${id}`);
 
