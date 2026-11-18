@@ -32,7 +32,8 @@ export default function LojasPage() {
     const termo = normalizar(buscaDebounced);
     return lojas.filter((loja) => {
       if (termo && !normalizar(loja.nome).includes(termo)) return false;
-      if (categoria && normalizar(loja.categoriaPrincipal?.nome ?? "") !== normalizar(categoria)) return false;
+      const catNome = loja.categoria?.nome ?? loja.categoriaPrincipal?.nome ?? "";
+      if (categoria && normalizar(catNome) !== normalizar(categoria)) return false;
       return true;
     });
   }, [lojas, buscaDebounced, categoria]);
