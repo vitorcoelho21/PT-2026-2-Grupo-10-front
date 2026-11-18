@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Pencil, Star, User } from "lucide-react";
+import { Pencil, Star, Trash2, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
+import ModalExcluirLoja from "@/components/loja/ModalExcluirLoja";
 import ModalLoja from "@/components/loja/ModalLoja";
 import CardAvaliacao from "@/components/perfil/CardAvaliacao";
 import { getMe } from "@/services/authService";
@@ -57,6 +58,7 @@ export default function PaginaLoja({ id }: { id: number }) {
   const [nomeDono, setNomeDono] = useState("");
   const [idLogado, setIdLogado] = useState<number | null>(null);
   const [editando, setEditando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
   const idDono = loja?.usuarioId;
 
   useEffect(() => {
@@ -106,8 +108,10 @@ export default function PaginaLoja({ id }: { id: number }) {
           <>
             <div className="relative px-4 text-center">
               <h1 className="text-4xl font-medium text-white md:text-6xl">{loja.nome}</h1>
-              {loja.categoriaPrincipal && (
-                <p className="text-lg lowercase text-white/80 md:text-xl">{loja.categoriaPrincipal.nome}</p>
+              {(loja.categoria?.nome || loja.categoriaPrincipal?.nome) && (
+                <p className="text-lg lowercase text-white/80 md:text-xl">
+                  {loja.categoria?.nome || loja.categoriaPrincipal?.nome}
+                </p>
               )}
             </div>
 
@@ -121,15 +125,26 @@ export default function PaginaLoja({ id }: { id: number }) {
             )}
 
             {ehDono && (
-              <button
-                type="button"
-                onClick={() => setEditando(true)}
-                title="Editar loja"
-                aria-label="Editar loja"
-                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#6A38F3] text-white shadow-md transition hover:bg-[#7B4FF5] md:right-8 md:top-6"
-              >
-                <Pencil className="h-5 w-5" />
-              </button>
+              <div className="absolute right-4 top-4 flex items-center gap-2 md:right-8 md:top-6">
+                <button
+                  type="button"
+                  onClick={() => setEditando(true)}
+                  title="Editar loja"
+                  aria-label="Editar loja"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#6A38F3] text-white shadow-md transition hover:bg-[#7B4FF5]"
+                >
+                  <Pencil className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExcluindo(true)}
+                  title="Excluir loja"
+                  aria-label="Excluir loja"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF0000] text-white shadow-md transition hover:bg-[#D90000]"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
             )}
           </>
         )}
@@ -186,6 +201,14 @@ export default function PaginaLoja({ id }: { id: number }) {
           }}
           onDeletada={() => router.replace("/perfil")}
           onFechar={() => setEditando(false)}
+        />
+      )}
+
+      {excluindo && loja && (
+        <ModalExcluirLoja
+          loja={loja}
+          onSucesso={() => router.replace("/perfil")}
+          onFechar={() => setExcluindo(false)}
         />
       )}
     </main>
