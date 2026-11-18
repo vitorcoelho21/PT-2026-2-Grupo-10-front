@@ -1,70 +1,87 @@
 "use client";
 
-import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface FiltrosCategoriaProps {
   categoria: string;
+  subcategoriaAtiva: string | null;
+  onSelecionarSubcategoria: (subcategoria: string | null) => void;
+  ordenacao: string;
+  onSelecionarOrdenacao: (ord: string) => void;
 }
 
-// Dicionário com os filtros específicos de cada secção
+// Dicionário com os filtros específicos de cada seção
 const opcoesFiltros: Record<string, string[]> = {
   beleza: ["Maquilhagem", "Skincare", "Cabelo", "Perfumes"],
   mercado: ["Bebidas", "Mercearia", "Laticínios", "Limpeza"],
   moda: ["Roupas", "Calçado", "Acessórios", "Infantil"],
-  eletronicos: ["Smartphones", "Computadores", "TVs", "Acessórios"],
+  eletronicos: ["Celulares", "Notebooks", "TVs", "Acessórios", "Outros"],
   jogos: ["PlayStation", "Xbox", "Nintendo", "PC"],
   farmacia: ["Medicamentos", "Vitaminas", "Higiene", "Bebé"],
-  // Caso a categoria não esteja mapeada acima, mostra estes filtros por omissão
-  default: ["Novidades", "Promoções", "Mais Vendidos", "Marcas"],
+  brinquedos: ["Jogos de Tabuleiro", "Bonecos e Figuras", "Educativos", "Pelúcias"],
+  casa: ["Móveis", "Decoração", "Cozinha", "Cama, Mesa e Banho"],
+  default: ["Novidades", "Promoções", "Mais Vendidos", "Outros"],
 };
 
-export default function FiltrosCategoria({ categoria }: FiltrosCategoriaProps) {
-  const [filtroAtivo, setFiltroAtivo] = useState("Todos");
-  
-  // Vai buscar os filtros da categoria atual, ou usa o default se não encontrar
-  const filtros = opcoesFiltros[categoria] || opcoesFiltros.default;
+const opcoesOrdenacao = [
+  { rotulo: "ordenar por", valor: "" },
+  { rotulo: "mais recentes", valor: "recentes_desc" },
+  { rotulo: "menor preço", valor: "preco_asc" },
+  { rotulo: "maior preço", valor: "preco_desc" },
+  { rotulo: "nome (a-z)", valor: "nome_asc" },
+  { rotulo: "mais avaliados", valor: "relevancia_desc" },
+];
+
+export default function FiltrosCategoria({
+  categoria,
+  subcategoriaAtiva,
+  onSelecionarSubcategoria,
+  ordenacao,
+  onSelecionarOrdenacao,
+}: FiltrosCategoriaProps) {
+  const chave = categoria.toLowerCase();
+  const filtros = opcoesFiltros[chave] || opcoesFiltros.default;
 
   return (
-    <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4 md:px-16">
-      
-      {/* Botões de Filtro */}
-      <div className="flex flex-1 gap-3 overflow-x-auto">
-        <button 
-          onClick={() => setFiltroAtivo("Todos")}
-          className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
-            filtroAtivo === "Todos" 
-              ? "bg-purple-600 text-white" 
-              : "bg-white text-gray-700 shadow-sm hover:bg-gray-50"
-          }`}
-        >
-          Todos
-        </button>
-        
-        {filtros.map((filtro) => (
-          <button
-            key={filtro}
-            onClick={() => setFiltroAtivo(filtro)}
-            className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
-              filtroAtivo === filtro 
-                ? "bg-purple-600 text-white" 
-                : "bg-white text-gray-700 shadow-sm hover:bg-gray-50"
-            }`}
-          >
-            {filtro}
-          </button>
-        ))}
+    <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Botões de Filtro de Subcategoria */}
+      <div className="scrollbar-hide flex items-center gap-3 overflow-x-auto pb-2 sm:pb-0">
+        {filtros.map((filtro) => {
+          const ativo = subcategoriaAtiva === filtro;
+          return (
+            <button
+              key={filtro}
+              type="button"
+              onClick={() => onSelecionarSubcategoria(ativo ? null : filtro)}
+              aria-pressed={ativo}
+              className={`whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-medium transition shadow-sm ${
+                ativo
+                  ? "bg-[#6A38F3] text-white shadow-md"
+                  : "bg-white text-[#6A38F3] hover:bg-[#F3EFFF]"
+              }`}
+            >
+              {filtro}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Botão de Ordenação */}
-      <button className="ml-4 flex shrink-0 items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="21" y1="10" x2="3" y2="10"></line>
-          <line x1="21" y1="6" x2="3" y2="6"></line>
-          <line x1="21" y1="14" x2="3" y2="14"></line>
-          <line x1="21" y1="18" x2="3" y2="18"></line>
-        </svg>
-        Ordenar por
-      </button>
+      {/* Botão / Seletor de Ordenação */}
+      <div className="relative shrink-0 self-end sm:self-auto">
+        <select
+          value={ordenacao}
+          onChange={(e) => onSelecionarOrdenacao(e.target.value)}
+          aria-label="Ordenar produtos"
+          className="cursor-pointer appearance-none rounded-full bg-white px-6 py-2.5 pr-11 text-sm font-medium text-[#6A38F3] shadow-sm outline-none transition hover:bg-[#F3EFFF]"
+        >
+          {opcoesOrdenacao.map((opcao) => (
+            <option key={opcao.valor} value={opcao.valor} className="text-black">
+              {opcao.rotulo}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6A38F3]" />
+      </div>
     </div>
   );
 }

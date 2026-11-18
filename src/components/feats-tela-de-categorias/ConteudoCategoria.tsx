@@ -1,36 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import SearchBar from "@/components/home/SearchBar";
+import { useMemo, useState } from "react";
+import { Search, X } from "lucide-react";
+
 import FiltrosCategoria from "@/components/feats-tela-de-categorias/FiltrosCategoria";
 import ListaProdutos from "@/components/feats-tela-de-categorias/ListaProdutos";
 import { useDebounce } from "@/hooks/useDebounce";
 
-// Parte interativa da página de categoria: guarda o texto da busca
-// e repassa para a lista, que filtra os produtos enquanto o usuário digita.
+// Conteúdo interativo da página de categorias:
+// 1. Barra de pesquisa centralizada
+// 2. Filtros de subcategoria e ordenação alinhados horizontalmente (sem sobreposição)
+// 3. Grade de produtos com 5 colunas
 export default function ConteudoCategoria({ categoria }: { categoria: string }) {
   const [busca, setBusca] = useState("");
+  const [subcategoria, setSubcategoria] = useState<string | null>(null);
+  const [ordenacao, setOrdenacao] = useState("");
   const buscaDebounced = useDebounce(busca);
 
+  // Divide o valor da ordenação (ex: "preco_asc") em campo e direção
+  const { ordenarPor, ordem } = useMemo(() => {
+    if (!ordenacao) return { ordenarPor: undefined, ordem: undefined };
+    const [campo, sentido] = ordenacao.split("_");
+    return { ordenarPor: campo, ordem: sentido };
+  }, [ordenacao]);
+
   return (
-    <>
-      {/* Barra de Pesquisa
-          A linha de filtros abaixo sobe (-mt-20) e fica por cima desta área.
-          z-40 põe a busca na frente; pointer-events-none deixa os cliques
-          fora da caixa da busca passarem para os filtros (ex.: "Ordenar por"). */}
-      <div className="pointer-events-none relative z-40 mt-12 max-w-4xl px-8 ml-[800px] md:px-16">
-        <SearchBar valor={busca} onChange={setBusca} />
+    <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+      {/* 1. Barra de Pesquisa Centralizada */}
+      <div className="mx-auto mb-8 max-w-2xl">
+        <div className="flex items-center rounded-full bg-white px-6 py-3.5 shadow-sm">
+          <input
+            type="search"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Procurar por..."
+            aria-label="Procurar produtos"
+            className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-[#B9A6F7] [&::-webkit-search-cancel-button]:hidden"
+          />
+          {busca ? (
+            <button
+              type="button"
+              onClick={() => setBusca("")}
+              aria-label="Limpar busca"
+              className="text-[#B9A6F7] hover:text-[#6A38F3]"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          ) : (
+            <Search className="h-5 w-5 text-[#B9A6F7]" />
+          )}
+        </div>
       </div>
 
-      {/* Filtros e Ordenação */}
-      <div className="relative z-30 -mt-20 flex w-full items-center justify-between px-8 py-4 md:px-16 -ml-100">
-        <FiltrosCategoria categoria={categoria} />
+      {/* 2. Filtros e Ordenação: em linha única, sem sobreposição */}
+      <div className="mb-8">
+        <FiltrosCategoria
+          categoria={categoria}
+          subcategoriaAtiva={subcategoria}
+          onSelecionarSubcategoria={setSubcategoria}
+          ordenacao={ordenacao}
+          onSelecionarOrdenacao={setOrdenacao}
+        />
       </div>
 
-      {/* Grelha de Produtos vindos do Banco de Dados */}
-      <div className="px-8 pb-16 md:px-16">
-        <ListaProdutos categoria={categoria} busca={buscaDebounced} />
+      {/* 3. Grade de Produtos */}
+      <div className="pb-16">
+        <ListaProdutos
+          categoria={categoria}
+          subcategoria={subcategoria}
+          busca={buscaDebounced}
+          ordenarPor={ordenarPor}
+          ordem={ordem}
+        />
       </div>
-    </>
+    </div>
   );
 }
