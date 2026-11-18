@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { isAxiosError } from "axios";
 
 import AuthLayout from "@/components/login/AuthLayout";
 import Input from "@/components/Input";
@@ -69,8 +70,8 @@ export default function CadastroForm() {
         senhaHash: form.senha,
       });
       router.push("/login?cadastro=sucesso");
-    } catch (err: any) {
-      if (err.response) {
+    } catch (err: unknown) {
+      if (isAxiosError(err) && err.response) {
         const status = err.response.status;
         const mensagemBack = err.response.data?.message;
 
