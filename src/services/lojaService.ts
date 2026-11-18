@@ -2,6 +2,7 @@ import api from './api';
 
 export interface LojaData {
   nome: string;
+  categoriaId?: number | null;
   descricao?: string | null;
   logoUrl?: string | null;
   bannerUrl?: string | null;
@@ -11,6 +12,8 @@ export interface LojaData {
 export interface Loja extends LojaData {
   id: number;
   usuarioId: number;
+  categoriaId?: number | null;
+  categoria?: { id: number; nome: string } | null;
   // Só vem no GET /lojas: categoria com mais produtos da loja (null se não tem produtos)
   categoriaPrincipal?: { id: number; nome: string } | null;
 }
