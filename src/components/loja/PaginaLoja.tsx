@@ -6,11 +6,20 @@ import { useRouter } from "next/navigation";
 import { Pencil, Star, Trash2, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
+import { BotaoAvaliacao, ModalAvaliacao } from "@/components/avaliacao";
 import ModalExcluirLoja from "@/components/loja/ModalExcluirLoja";
 import ModalLoja from "@/components/loja/ModalLoja";
 import CardAvaliacao from "@/components/perfil/CardAvaliacao";
 import { getMe } from "@/services/authService";
-import { AvaliacaoLoja, getAvaliacoesDaLoja, getLojas, Loja } from "@/services/lojaService";
+import {
+  atualizarAvaliacaoLoja,
+  AvaliacaoLoja,
+  criarAvaliacaoLoja,
+  deletarAvaliacaoLoja,
+  getAvaliacoesDaLoja,
+  getLojas,
+  Loja,
+} from "@/services/lojaService";
 import { getUserById } from "@/services/userService";
 import { extrairMensagemErro } from "@/utils/erros";
 import { getToken } from "@/utils/token";
@@ -59,6 +68,7 @@ export default function PaginaLoja({ id }: { id: number }) {
   const [idLogado, setIdLogado] = useState<number | null>(null);
   const [editando, setEditando] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
+  const [modalAvaliacaoAberto, setModalAvaliacaoAberto] = useState(false);
   const idDono = loja?.usuarioId;
 
   useEffect(() => {
@@ -90,6 +100,33 @@ export default function PaginaLoja({ id }: { id: number }) {
 
   const ehDono = idLogado !== null && idLogado === idDono;
   const media = avaliacoes?.length ? avaliacoes.reduce((soma, a) => soma + a.nota, 0) / avaliacoes.length : null;
+  const minhaAvaliacao = avaliacoes?.find((a) => idLogado !== null && a.usuarioId === idLogado) ?? null;
+
+  function handleAbrirModalAvaliacao() {
+    if (!getToken()) {
+      router.push("/login");
+      return;
+    }
+    setModalAvaliacaoAberto(true);
+  }
+
+  async function handleSalvarAvaliacao(dados: { nota: number; comentario?: string }) {
+    if (minhaAvaliacao) {
+      const atualizada = await atualizarAvaliacaoLoja(minhaAvaliacao.id, dados);
+      setAvaliacoes((prev) =>
+        prev ? prev.map((a) => (a.id === minhaAvaliacao.id ? { ...a, ...atualizada } : a)) : [atualizada]
+      );
+    } else {
+      const nova = await criarAvaliacaoLoja({ lojaId: id, ...dados });
+      setAvaliacoes((prev) => (prev ? [nova, ...prev] : [nova]));
+    }
+  }
+
+  async function handleDeletarAvaliacao() {
+    if (!minhaAvaliacao) return;
+    await deletarAvaliacaoLoja(minhaAvaliacao.id);
+    setAvaliacoes((prev) => (prev ? prev.filter((a) => a.id !== minhaAvaliacao.id) : []));
+  }
 
   return (
     <main className="min-h-screen bg-[#F6F3E4]">
@@ -164,6 +201,12 @@ export default function PaginaLoja({ id }: { id: number }) {
         ) : (
           avaliacoes && <p className="mt-2 text-sm text-white/70">Esta loja ainda não tem avaliações.</p>
         )}
+
+        <BotaoAvaliacao
+          onClick={handleAbrirModalAvaliacao}
+          jaAvaliou={Boolean(minhaAvaliacao)}
+          className="mt-6"
+        />
       </section>
 
       <div className="px-4 py-10 md:px-16">
@@ -185,12 +228,24 @@ export default function PaginaLoja({ id }: { id: number }) {
                   nota={avaliacao.nota}
                   comentario={avaliacao.comentario}
                   data={avaliacao.createdAt}
+                  onEditar={idLogado === avaliacao.usuarioId ? () => setModalAvaliacaoAberto(true) : undefined}
                 />
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {modalAvaliacaoAberto && loja && (
+        <ModalAvaliacao
+          tipo="loja"
+          nomeAlvo={loja.nome}
+          avaliacaoExistente={minhaAvaliacao}
+          onSalvar={handleSalvarAvaliacao}
+          onDeletar={minhaAvaliacao ? handleDeletarAvaliacao : undefined}
+          onFechar={() => setModalAvaliacaoAberto(false)}
+        />
+      )}
 
       {editando && loja && (
         <ModalLoja
