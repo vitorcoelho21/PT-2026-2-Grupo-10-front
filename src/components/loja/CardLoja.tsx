@@ -44,8 +44,10 @@ export default function CardLoja({ loja, pequeno = false }: { loja: Loja; pequen
       <span className={`w-full truncate ${tamanhoNome} text-black`} title={loja.nome}>
         {loja.nome}
       </span>
-      {loja.categoriaPrincipal && (
-        <span className={`${tamanhoCategoria} lowercase leading-tight text-[#6A38F3]`}>{loja.categoriaPrincipal.nome}</span>
+      {(loja.categoria?.nome || loja.categoriaPrincipal?.nome) && (
+        <span className={`${tamanhoCategoria} lowercase leading-tight text-[#6A38F3]`}>
+          {loja.categoria?.nome || loja.categoriaPrincipal?.nome}
+        </span>
       )}
     </Link>
   );

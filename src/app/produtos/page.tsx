@@ -15,6 +15,35 @@ const POR_SECAO = 5;
 // Categorias que ganham uma linha própria na visão geral
 const CATEGORIAS_DESTAQUE = ["Mercado", "Beleza", "Moda"];
 
+// Subcategorias conhecidas por categoria raiz (garante funcionamento mesmo se categoriaPai não estiver preenchida)
+const SUBCATEGORIAS_POR_CATEGORIA: Record<string, string[]> = {
+  beleza: ["maquilhagem", "skincare", "cabelo", "perfumes"],
+  mercado: ["bebidas", "mercearia", "laticinios", "limpeza"],
+  moda: ["roupas", "calcado", "acessorios", "infantil"],
+  eletronicos: ["smartphones", "computadores", "tvs", "acessorios", "celulares", "notebooks"],
+  jogos: ["playstation", "xbox", "nintendo", "pc"],
+  farmacia: ["medicamentos", "vitaminas", "higiene", "bebe"],
+  brinquedos: ["jogos de tabuleiro", "bonecos e figuras", "educativos", "pelucias"],
+  casa: ["moveis", "decoracao", "cozinha", "cama, mesa e banho"],
+};
+
+function produtoPertenceACategoria(produto: Produto, categoriaNome: string): boolean {
+  const alvo = normalizar(categoriaNome);
+  const nomeCat = normalizar(produto.categoria?.nome ?? "");
+  const nomePai = normalizar(produto.categoria?.categoriaPai?.nome ?? "");
+
+  if (nomeCat === alvo || nomePai === alvo) {
+    return true;
+  }
+
+  const subcategorias = SUBCATEGORIAS_POR_CATEGORIA[alvo];
+  if (subcategorias && subcategorias.includes(nomeCat)) {
+    return true;
+  }
+
+  return false;
+}
+
 function TituloSecao({ categoria, acao }: { categoria?: string; acao?: React.ReactNode }) {
   return (
     <div className="mb-6 flex items-end justify-between gap-4">
@@ -52,7 +81,7 @@ export default function ProdutosPage() {
     const termo = normalizar(buscaDebounced);
     return produtos.filter((p) => {
       if (termo && !normalizar(p.nome).includes(termo)) return false;
-      if (categoria && normalizar(p.categoria?.nome ?? "") !== normalizar(categoria)) return false;
+      if (categoria && !produtoPertenceACategoria(p, categoria)) return false;
       return true;
     });
   }, [produtos, buscaDebounced, categoria]);
@@ -64,13 +93,14 @@ export default function ProdutosPage() {
     () =>
       CATEGORIAS_DESTAQUE.map((nome) => ({
         nome,
-        produtos: filtrados.filter((p) => normalizar(p.categoria?.nome ?? "") === normalizar(nome)),
+        produtos: filtrados.filter((p) => produtoPertenceACategoria(p, nome)),
       })).filter((secao) => secao.produtos.length > 0),
     [filtrados],
   );
   const outrosProdutos = useMemo(() => {
-    const destaques = CATEGORIAS_DESTAQUE.map(normalizar);
-    return filtrados.filter((p) => !destaques.includes(normalizar(p.categoria?.nome ?? "")));
+    return filtrados.filter(
+      (p) => !CATEGORIAS_DESTAQUE.some((nome) => produtoPertenceACategoria(p, nome)),
+    );
   }, [filtrados]);
 
   function verMais(nome: string) {
@@ -115,7 +145,16 @@ export default function ProdutosPage() {
 
         {produtos && !erro && filtrados.length === 0 && (
           <>
-            <TituloSecao categoria={categoria ?? undefined} />
+            <TituloSecao
+              categoria={categoria ?? undefined}
+              acao={
+                categoria && (
+                  <button type="button" onClick={() => setCategoria(null)} className={botaoLink}>
+                    ver todas as categorias
+                  </button>
+                )
+              }
+            />
             <p className="rounded-3xl bg-white px-6 py-10 text-center text-gray-600">
               {mostrarSecoes ? "Nenhum produto cadastrado ainda." : "Nenhum produto encontrado com esses filtros."}
             </p>

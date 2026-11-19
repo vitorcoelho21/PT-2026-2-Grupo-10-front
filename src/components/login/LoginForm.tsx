@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { isAxiosError } from "axios";
 
 import { login } from "@/services/authService";
 
@@ -46,8 +47,8 @@ export default function LoginForm({
       await login({ email, senhaHash: senha });
 
       router.push("/home");
-    } catch (err: any) {
-      if (err.response) {
+    } catch (err: unknown) {
+      if (isAxiosError(err) && err.response) {
         const status = err.response.status;
 
         if (status === 401) {

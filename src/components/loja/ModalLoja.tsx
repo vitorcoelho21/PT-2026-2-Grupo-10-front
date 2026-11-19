@@ -3,10 +3,12 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { ChevronDown, FileUp } from "lucide-react";
 
+import { categorias as categoriasPadrao } from "@/components/home/CategoriasCarrossel";
+import ModalExcluirLoja from "@/components/loja/ModalExcluirLoja";
 import CampoModal from "@/components/perfil/CampoModal";
 import Modal from "@/components/perfil/Modal";
 import { Categoria, getCategorias } from "@/services/categoriaService";
-import { createLoja, deleteLoja, Loja, updateLoja } from "@/services/lojaService";
+import { createLoja, Loja, LojaData, updateLoja } from "@/services/lojaService";
 import { extrairMensagemErro } from "@/utils/erros";
 
 type CampoImagem = "logoUrl" | "stickerUrl" | "bannerUrl";
@@ -87,14 +89,36 @@ export default function ModalLoja({ loja, onSalva, onDeletada, onFechar }: Props
     stickerUrl: loja?.stickerUrl ?? "",
     bannerUrl: loja?.bannerUrl ?? "",
   });
-  const [categoriaId, setCategoriaId] = useState(loja?.categoriaPrincipal ? String(loja.categoriaPrincipal.id) : "");
+
+  const idInicial = loja?.categoriaId
+    ? String(loja.categoriaId)
+    : loja?.categoria?.id
+    ? String(loja.categoria.id)
+    : loja?.categoriaPrincipal?.id
+    ? String(loja.categoriaPrincipal.id)
+    : "";
+
+  const [categoriaId, setCategoriaId] = useState(idInicial);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
   useEffect(() => {
-    getCategorias()
-      .then((dados) => setCategorias([...dados].sort((a, b) => a.nome.localeCompare(b.nome))))
+    getCategorias({ raiz: true })
+      .then((dados) => {
+        // Filtra apenas as categorias padrão que estão predefinidas no frontend
+        const nomesValidos = new Set(categoriasPadrao.map((c) => c.nome.toLowerCase()));
+        const filtradas = dados.filter((c) => nomesValidos.has(c.nome.toLowerCase()));
+
+        // Ordena exatamente na ordem predefinida no frontend
+        const ordemMap = new Map(categoriasPadrao.map((c, i) => [c.nome.toLowerCase(), i]));
+        filtradas.sort(
+          (a, b) => (ordemMap.get(a.nome.toLowerCase()) ?? 99) - (ordemMap.get(b.nome.toLowerCase()) ?? 99)
+        );
+
+        setCategorias(filtradas);
+      })
       .catch(() => {});
   }, []);
 
@@ -102,6 +126,11 @@ export default function ModalLoja({ loja, onSalva, onDeletada, onFechar }: Props
     const novos: Record<string, string> = {};
     if (!form.nome.trim()) novos.nome = "Informe o nome da loja.";
     else if (form.nome.trim().length > 255) novos.nome = "O nome deve ter no máximo 255 caracteres.";
+
+    if (!categoriaId) {
+      novos.categoriaId = "Selecione uma categoria padrão para a loja.";
+    }
+
     for (const { campo } of AREAS_IMAGEM) {
       if (form[campo].trim().length > 255) novos[campo] = "O link deve ter no máximo 255 caracteres.";
     }
@@ -116,8 +145,9 @@ export default function ModalLoja({ loja, onSalva, onDeletada, onFechar }: Props
     if (Object.keys(novos).length > 0) return;
 
     const vazio = editando ? null : undefined;
-    const dados = {
+    const dados: LojaData = {
       nome: form.nome.trim(),
+      categoriaId: Number(categoriaId),
       logoUrl: form.logoUrl.trim() || vazio,
       stickerUrl: form.stickerUrl.trim() || vazio,
       bannerUrl: form.bannerUrl.trim() || vazio,
@@ -126,7 +156,7 @@ export default function ModalLoja({ loja, onSalva, onDeletada, onFechar }: Props
     setLoading(true);
     try {
       const resposta = loja ? await updateLoja(loja.id, dados) : await createLoja(dados);
-      onSalva({ ...resposta.data, categoriaPrincipal: loja?.categoriaPrincipal ?? null });
+      onSalva(resposta.data);
     } catch (err) {
       setErrors({ geral: extrairMensagemErro(err, "Não foi possível salvar a loja.") });
     } finally {
@@ -134,102 +164,111 @@ export default function ModalLoja({ loja, onSalva, onDeletada, onFechar }: Props
     }
   }
 
-  async function handleDeletar() {
-    if (!loja) return;
-    const confirmou = window.confirm(`Tem certeza que deseja deletar a loja "${loja.nome}"? Esta ação é irreversível.`);
-    if (!confirmou) return;
-
-    setLoading(true);
-    try {
-      await deleteLoja(loja.id);
-      onDeletada?.();
-    } catch (err) {
-      setErrors({ geral: extrairMensagemErro(err, "Não foi possível deletar a loja.") });
-      setLoading(false);
-    }
-  }
-
   return (
-    <Modal titulo={editando ? "Editar loja" : "Adicionar loja"} onFechar={onFechar}>
-      <form onSubmit={handleSubmit} noValidate className="mx-auto flex w-full max-w-[460px] flex-col">
-        <h2 className="mb-6 text-center text-3xl font-medium text-black">{editando ? "Editar loja" : "Adicionar loja"}</h2>
+    <>
+      {!modalExcluirAberto && (
+        <Modal titulo={editando ? "Editar loja" : "Adicionar loja"} onFechar={onFechar}>
+          <form onSubmit={handleSubmit} noValidate className="mx-auto flex w-full max-w-[460px] flex-col">
+            <h2 className="mb-6 text-center text-3xl font-medium text-black">
+              {editando ? "Editar loja" : "Adicionar loja"}
+            </h2>
 
-        <div className="flex flex-col gap-3">
-          <CampoModal
-            name="nome"
-            label="Nome da loja"
-            value={form.nome}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setForm({ ...form, nome: e.target.value });
-              setErrors({ ...errors, nome: "" });
-            }}
-            error={errors.nome}
-            disabled={loading}
-          />
+            <div className="flex flex-col gap-3">
+              <CampoModal
+                name="nome"
+                label="Nome da loja"
+                value={form.nome}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setForm({ ...form, nome: e.target.value });
+                  setErrors({ ...errors, nome: "" });
+                }}
+                error={errors.nome}
+                disabled={loading}
+              />
 
-          <div className="relative">
-            <select
-              value={categoriaId}
-              onChange={(e) => setCategoriaId(e.target.value)}
-              aria-label="Categoria"
-              disabled={loading}
-              className={`w-full appearance-none rounded-2xl bg-white px-4 py-3.5 pr-12 text-base outline-none focus:ring-2 focus:ring-[#6A38F3] ${
-                categoriaId ? "text-black" : "text-[#999797]"
-              }`}
-            >
-              <option value="">Categoria</option>
-              {categorias.map((categoria) => (
-                <option key={categoria.id} value={categoria.id}>
-                  {categoria.nome}
-                </option>
+              <div className="flex flex-col gap-1">
+                <div className="relative">
+                  <select
+                    value={categoriaId}
+                    onChange={(e) => {
+                      setCategoriaId(e.target.value);
+                      setErrors({ ...errors, categoriaId: "" });
+                    }}
+                    aria-label="Categoria"
+                    disabled={loading}
+                    className={`w-full appearance-none rounded-2xl bg-white px-4 py-3.5 pr-12 text-base outline-none focus:ring-2 focus:ring-[#6A38F3] ${
+                      errors.categoriaId ? "border border-red-400" : ""
+                    } ${categoriaId ? "text-black" : "text-[#999797]"}`}
+                  >
+                    <option value="">Selecione uma categoria</option>
+                    {categorias.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.nome}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+                </div>
+                {errors.categoriaId && <span className="px-2 text-xs text-red-600">{errors.categoriaId}</span>}
+              </div>
+
+              {AREAS_IMAGEM.map(({ campo, texto, rotulo }) => (
+                <AreaImagem
+                  key={campo}
+                  texto={texto}
+                  rotulo={rotulo}
+                  valor={form[campo]}
+                  erro={errors[campo]}
+                  disabled={loading}
+                  onChange={(valor) => {
+                    setForm({ ...form, [campo]: valor });
+                    setErrors({ ...errors, [campo]: "" });
+                  }}
+                />
               ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
-          </div>
+            </div>
 
-          {AREAS_IMAGEM.map(({ campo, texto, rotulo }) => (
-            <AreaImagem
-              key={campo}
-              texto={texto}
-              rotulo={rotulo}
-              valor={form[campo]}
-              erro={errors[campo]}
-              disabled={loading}
-              onChange={(valor) => {
-                setForm({ ...form, [campo]: valor });
-                setErrors({ ...errors, [campo]: "" });
-              }}
-            />
-          ))}
-        </div>
+            {errors.geral && (
+              <p className="mt-4 text-center text-xs text-red-600" role="alert">
+                {errors.geral}
+              </p>
+            )}
 
-        {errors.geral && (
-          <p className="mt-4 text-center text-xs text-red-600" role="alert">
-            {errors.geral}
-          </p>
-        )}
+            <div className="mx-auto mt-8 flex w-full max-w-[373px] flex-col gap-2.5">
+              {editando && (
+                <button
+                  type="button"
+                  onClick={() => setModalExcluirAberto(true)}
+                  disabled={loading}
+                  className="rounded-full bg-[#FF0000] py-3 text-base font-medium uppercase text-white shadow-md transition hover:bg-[#D90000] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Deletar
+                </button>
+              )}
 
-        <div className="mx-auto mt-8 flex w-full max-w-[373px] flex-col gap-2.5">
-          {editando && (
-            <button
-              type="button"
-              onClick={handleDeletar}
-              disabled={loading}
-              className="rounded-full bg-[#FF0000] py-3 text-base font-medium uppercase text-white shadow-md transition hover:bg-[#D90000] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Deletar
-            </button>
-          )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="rounded-full bg-[#6A38F3] py-3 text-base font-medium text-white shadow-md transition hover:bg-[#7B4FF5] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? "Salvando..." : editando ? "Salvar" : "Adicionar"}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-full bg-[#6A38F3] py-3 text-base font-medium text-white shadow-md transition hover:bg-[#7B4FF5] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading ? "Salvando..." : editando ? "Salvar" : "Adicionar"}
-          </button>
-        </div>
-      </form>
-    </Modal>
+      {modalExcluirAberto && loja && (
+        <ModalExcluirLoja
+          loja={loja}
+          onSucesso={() => {
+            setModalExcluirAberto(false);
+            onDeletada?.();
+            onFechar();
+          }}
+          onFechar={() => setModalExcluirAberto(false)}
+        />
+      )}
+    </>
   );
 }

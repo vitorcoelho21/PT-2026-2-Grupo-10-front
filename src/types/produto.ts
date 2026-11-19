@@ -8,17 +8,25 @@ export interface Produto {
   estoque: number;
   createdAt: string;
   updatedAt: string;
-  categoria: { id: number; nome: string };
-  // logoUrl só aparece se o back-end incluir no select da loja
-  loja: { id: number; nome: string; logoUrl?: string | null };
+  categoria: {
+    id: number;
+    nome: string;
+    categoriaPaiId?: number | null;
+    categoriaPai?: { id: number; nome: string } | null;
+  };
+  // logoUrl ou stickerUrl da loja para o badge do produto
+  loja: { id: number; nome: string; logoUrl?: string | null; stickerUrl?: string | null };
   // No GET /products vem só a imagem principal; no GET /products/:id vêm todas
   imagens: ImagemProduto[];
 }
 
 export interface FiltrosProduto {
+  categoria?: string;
   categoriaId?: number;
   lojaId?: number;
   busca?: string;
+  ordenarPor?: string;
+  ordem?: string;
 }
 
 export interface ImagemProduto {
