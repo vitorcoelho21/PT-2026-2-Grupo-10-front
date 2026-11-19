@@ -229,6 +229,7 @@ export default function PaginaLoja({ id }: { id: number }) {
                   comentario={avaliacao.comentario}
                   data={avaliacao.createdAt}
                   onEditar={idLogado === avaliacao.usuarioId ? () => setModalAvaliacaoAberto(true) : undefined}
+                  linkVerMais={`/comentarios/${avaliacao.id}?tipo=loja`}
                 />
               </li>
             ))}
