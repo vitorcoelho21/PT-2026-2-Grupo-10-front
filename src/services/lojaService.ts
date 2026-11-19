@@ -56,6 +56,12 @@ export const getAvaliacoesDaLoja = async (lojaId: number) => {
   return response.data;
 };
 
+export const getAvaliacaoLoja = async (id: number) => {
+  const response = await api.get<AvaliacaoLoja>(`/store-reviews/${id}`);
+  return response.data;
+};
+
+
 export interface CriarAvaliacaoLojaDados {
   lojaId: number;
   nota: number;

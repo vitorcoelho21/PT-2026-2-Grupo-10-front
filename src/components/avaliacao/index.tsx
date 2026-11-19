@@ -1,8 +1,9 @@
 import ModalAvaliacao, { ModalAvaliacaoProps } from "./ModalAvaliacao";
 import BotaoAvaliacao from "./BotaoAvaliacao";
 import EstrelaAvaliacao from "./EstrelaAvaliacao";
+import ModalEditarComentario from "./ModalEditarComentario";
 
-export { ModalAvaliacao, BotaoAvaliacao, EstrelaAvaliacao };
+export { ModalAvaliacao, BotaoAvaliacao, EstrelaAvaliacao, ModalEditarComentario };
 
 export function ModalFazerAvaliacao(
   props: Omit<ModalAvaliacaoProps, "avaliacaoExistente" | "onDeletar">

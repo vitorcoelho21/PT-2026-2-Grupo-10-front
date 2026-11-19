@@ -25,6 +25,12 @@ export const getAvaliacoesProduto = async (produtoId: number) => {
   return response.data;
 };
 
+export const getAvaliacaoProduto = async (id: number) => {
+  const response = await api.get<AvaliacaoProduto>(`/reviews/${id}`);
+  return response.data;
+};
+
+
 // POST /products — só funciona numa loja do usuário logado
 export const criarProduto = async (dados: CriarProdutoDados) => {
   const response = await api.post<Produto>('/products', dados);
