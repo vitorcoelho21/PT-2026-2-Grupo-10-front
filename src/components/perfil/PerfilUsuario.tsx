@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import { ChevronLeft, Mail, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import ModaisConta from "@/components/perfil/ModaisConta";
+import CardProduto from "@/components/produtos/CardProduto";
 import AvaliacoesDoUsuario from "@/components/perfil/AvaliacoesDoUsuario";
 import LojasDoUsuario from "@/components/perfil/LojasDoUsuario";
 import ModalLoja from "@/components/loja/ModalLoja";
@@ -19,10 +19,6 @@ import { Produto } from "@/types/produto";
 import { Usuario } from "@/types/user";
 import { extrairMensagemErro } from "@/utils/erros";
 import { getToken } from "@/utils/token";
-
-function formatarPreco(preco: string) {
-  return Number(preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
 
 export default function PerfilUsuario({ id }: { id?: number }) {
   const router = useRouter();
@@ -168,30 +164,7 @@ export default function PerfilUsuario({ id }: { id?: number }) {
               <ul className="flex gap-4 overflow-x-auto pb-4">
                 {produtos.map((produto) => (
                   <li key={produto.id} className="w-44 shrink-0 md:w-52">
-                    <Link
-                      href={`/produtos/${produto.id}`}
-                      className="flex h-full flex-col rounded-3xl bg-white p-4 transition hover:shadow-md"
-                    >
-                      <div className="mb-3 flex h-28 items-center justify-center overflow-hidden rounded-2xl bg-white md:h-32">
-                        <img
-                          src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"}
-                          alt={produto.nome}
-                          className="max-h-full max-w-full object-contain"
-                        />
-                      </div>
-                      <p className="truncate text-sm font-bold text-black" title={produto.nome}>
-                        {produto.nome}
-                      </p>
-                      <p className="text-sm font-bold text-black">{formatarPreco(produto.preco)}</p>
-                      <p className="truncate text-xs text-gray-500">{produto.loja.nome}</p>
-                      <span
-                        className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${
-                          produto.estoque > 0 ? "text-[#6A38F3]" : "text-red-500"
-                        }`}
-                      >
-                        {produto.estoque > 0 ? `${produto.estoque} em estoque` : "Esgotado"}
-                      </span>
-                    </Link>
+                    <CardProduto produto={produto} />
                   </li>
                 ))}
               </ul>
