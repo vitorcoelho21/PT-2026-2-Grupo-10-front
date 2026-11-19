@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+
+import CardProduto from "@/components/produtos/CardProduto";
+import { getProdutos } from "@/services/produtoService";
 import { Produto } from "@/types/produto";
 
 interface SecaoProdutosProps {
@@ -16,12 +19,9 @@ export default function SecaoProdutosDestaque({ tituloDestaque, categoria }: Sec
   useEffect(() => {
     async function carregarProdutos() {
       try {
-        const resposta = await fetch(`http://localhost:3000/products?categoria=${categoria}`);
-        if (resposta.ok) {
-          const dados = await resposta.json();
-          // O segredo para mostrar só 5 itens está aqui:
-          setProdutos(dados.slice(0, 5));
-        }
+        const dados = await getProdutos({ categoria });
+        // O segredo para mostrar só 5 itens está aqui:
+        setProdutos(dados.slice(0, 5));
       } catch (erro) {
         console.error(`Erro ao carregar destaques de ${categoria}:`, erro);
       } finally {
@@ -52,32 +52,7 @@ export default function SecaoProdutosDestaque({ tituloDestaque, categoria }: Sec
       {/* Grelha de 5 Produtos */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {produtos.map((produto) => (
-          <Link
-            href={`/produtos/${produto.id}`}
-            key={produto.id} className="relative flex flex-col justify-between rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md h-[250px]">
-             
-            <div className="absolute right-3 top-3 rounded-md bg-gray-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-600">
-              {produto.loja?.nome || "STOCK.IO"}
-            </div>
-
-            <div className="my-4 flex h-24 w-full items-center justify-center">
-              <img
-                src={produto.imagens?.[0]?.urlImagem || "/images/placeholder.svg"}
-                alt={produto.nome}
-                className="max-h-full object-contain"
-              />
-            </div>
-
-            <div>
-              <h3 className="mb-1 truncate text-sm font-semibold text-gray-900">{produto.nome}</h3>
-              <p className="mb-1 text-base font-bold text-gray-900">
-                R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
-              </p>
-              <span className={`text-[10px] font-bold tracking-wider ${produto.estoque > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                {produto.estoque > 0 ? 'DISPONÍVEL' : 'INDISPONÍVEL'}
-              </span>
-            </div>
-          </Link>
+          <CardProduto key={produto.id} produto={produto} />
         ))}
       </div>
     </div>

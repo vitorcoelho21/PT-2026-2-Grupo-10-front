@@ -16,6 +16,7 @@ export interface Produto {
 }
 
 export interface FiltrosProduto {
+  categoria?: string;
   categoriaId?: number;
   lojaId?: number;
   busca?: string;

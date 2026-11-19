@@ -48,7 +48,7 @@ export default function DashboardPage() {
           ) : (
             <>
               {/* Carrossel Centralizado */}
-              <div className="flex justify-center mb-12 w-full">
+              <div className="flex justify-center mb-12 w-full *:min-w-0">
                 <CategoriasCarrossel />
               </div>
           
