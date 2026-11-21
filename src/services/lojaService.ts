@@ -55,3 +55,35 @@ export const getAvaliacoesDaLoja = async (lojaId: number) => {
   const response = await api.get<AvaliacaoLoja[]>('/store-reviews', { params: { lojaId } });
   return response.data;
 };
+
+export const getAvaliacaoLoja = async (id: number) => {
+  const response = await api.get<AvaliacaoLoja>(`/store-reviews/${id}`);
+  return response.data;
+};
+
+
+export interface CriarAvaliacaoLojaDados {
+  lojaId: number;
+  nota: number;
+  comentario?: string;
+}
+
+export interface AtualizarAvaliacaoLojaDados {
+  nota?: number;
+  comentario?: string;
+}
+
+export const criarAvaliacaoLoja = async (dados: CriarAvaliacaoLojaDados) => {
+  const response = await api.post<AvaliacaoLoja>('/store-reviews', dados);
+  return response.data;
+};
+
+export const atualizarAvaliacaoLoja = async (id: number, dados: AtualizarAvaliacaoLojaDados) => {
+  const response = await api.patch<AvaliacaoLoja>(`/store-reviews/${id}`, dados);
+  return response.data;
+};
+
+export const deletarAvaliacaoLoja = async (id: number) => {
+  await api.delete(`/store-reviews/${id}`);
+};
+

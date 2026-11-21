@@ -28,6 +28,7 @@ function CardDoItem({ item }: { item: Item }) {
         nota={avaliacao.nota}
         comentario={avaliacao.comentario}
         data={avaliacao.createdAt}
+        linkVerMais={`/comentarios/${avaliacao.id}?tipo=loja`}
       />
     );
   }
@@ -49,6 +50,8 @@ function CardDoItem({ item }: { item: Item }) {
       nota={avaliacao.nota}
       comentario={avaliacao.comentario}
       data={avaliacao.createdAt}
+      linkVerMais={`/comentarios/${avaliacao.id}?tipo=produto`}
+      arredondamentoImagem="rounded-2xl"
     />
   );
 }

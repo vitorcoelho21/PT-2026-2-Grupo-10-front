@@ -25,6 +25,12 @@ export const getAvaliacoesProduto = async (produtoId: number) => {
   return response.data;
 };
 
+export const getAvaliacaoProduto = async (id: number) => {
+  const response = await api.get<AvaliacaoProduto>(`/reviews/${id}`);
+  return response.data;
+};
+
+
 // POST /products — só funciona numa loja do usuário logado
 export const criarProduto = async (dados: CriarProdutoDados) => {
   const response = await api.post<Produto>('/products', dados);
@@ -68,3 +74,29 @@ export const getAvaliacoesDoUsuario = async (usuarioId: number) => {
   const response = await api.get<AvaliacaoProduto[]>('/reviews', { params: { usuarioId } });
   return response.data;
 };
+
+export interface CriarAvaliacaoProdutoDados {
+  produtoId: number;
+  nota: number;
+  comentario?: string;
+}
+
+export interface AtualizarAvaliacaoProdutoDados {
+  nota?: number;
+  comentario?: string;
+}
+
+export const criarAvaliacaoProduto = async (dados: CriarAvaliacaoProdutoDados) => {
+  const response = await api.post<AvaliacaoProduto>('/reviews', dados);
+  return response.data;
+};
+
+export const atualizarAvaliacaoProduto = async (id: number, dados: AtualizarAvaliacaoProdutoDados) => {
+  const response = await api.patch<AvaliacaoProduto>(`/reviews/${id}`, dados);
+  return response.data;
+};
+
+export const deletarAvaliacaoProduto = async (id: number) => {
+  await api.delete(`/reviews/${id}`);
+};
+
