@@ -14,11 +14,22 @@ interface ListaProdutosProps {
   ordem?: string;
 }
 
-const SINONIMOS_SUBCATEGORIA: Record<string, string> = {
-  celulares: "Smartphones",
-  notebooks: "Computadores",
-  celular: "Smartphones",
-  computador: "Computadores",
+// Remove acentos e padroniza para comparar nomes ("Bebé" == "Bebê" == "bebe")
+const normalizar = (texto: string) =>
+  texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+// Rótulo do filtro no front -> nomes aceitos da subcategoria no banco
+const SINONIMOS_SUBCATEGORIA: Record<string, string[]> = {
+  celulares: ["celulares", "celular", "smartphones", "smartphone"],
+  notebooks: ["notebooks", "notebook", "computadores", "computador"],
+  tvs: ["tvs", "tv", "televisores", "televisao"],
+  maquilhagem: ["maquilhagem", "maquiagem"],
+  calcado: ["calcado", "calcados"],
+};
+
+const nomesDaSubcategoria = (sub: string) => {
+  const chave = normalizar(sub);
+  return SINONIMOS_SUBCATEGORIA[chave] ?? [chave];
 };
 
 export default function ListaProdutos({
@@ -45,27 +56,24 @@ export default function ListaProdutos({
         if (busca.trim()) params.busca = busca.trim();
         if (ordenarPor) params.ordenarPor = ordenarPor;
         if (ordem) params.ordem = ordem;
-
-        if (subcategoria) {
-          const chaveSub = subcategoria.toLowerCase();
-          if (chaveSub === "outros") {
-            // Quando for "Outros", busca na categoria principal e filtra produtos que não sejam dos subgrupos principais
-            if (categoria) params.categoria = categoria;
-          } else {
-            params.categoria = SINONIMOS_SUBCATEGORIA[chaveSub] || subcategoria;
-          }
-        } else if (categoria) {
-          params.categoria = categoria;
-        }
+        // Sempre busca pela categoria principal (o backend já inclui as subcategorias dela).
+        // A subcategoria é filtrada aqui: pelo nome ela não é única (ex.: "Acessórios" existe
+        // em Moda e em Eletrônicos) e pode nem existir no banco, o que daria 404.
+        if (categoria) params.categoria = categoria;
 
         const dados = await getProdutos(params);
 
         if (!cancelado) {
           let lista = Array.isArray(dados) ? dados : [];
 
-          if (subcategoria && subcategoria.toLowerCase() === "outros") {
-            const conhecidos = new Set(["smartphones", "computadores", "tvs", "acessórios", "acessorios"]);
-            lista = lista.filter((p) => !conhecidos.has((p.categoria?.nome ?? "").toLowerCase()));
+          // "Outros" mostra todos os produtos da categoria (sem filtrar subcategoria)
+          if (subcategoria && normalizar(subcategoria) !== "outros") {
+            const aceitos = new Set(nomesDaSubcategoria(subcategoria));
+            lista = lista.filter(
+              (p) =>
+                p.categoria?.categoriaPaiId != null &&
+                aceitos.has(normalizar(p.categoria.nome)),
+            );
           }
 
           setProdutos(lista);

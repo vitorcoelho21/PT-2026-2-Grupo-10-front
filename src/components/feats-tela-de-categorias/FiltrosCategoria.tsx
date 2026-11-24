@@ -11,17 +11,25 @@ interface FiltrosCategoriaProps {
 }
 
 // Dicionário com os filtros específicos de cada seção
+// ("Outros" é adicionado no fim de todas e mostra todos os produtos da categoria)
 const opcoesFiltros: Record<string, string[]> = {
   beleza: ["Maquilhagem", "Skincare", "Cabelo", "Perfumes"],
   mercado: ["Bebidas", "Mercearia", "Laticínios", "Limpeza"],
   moda: ["Roupas", "Calçado", "Acessórios", "Infantil"],
-  eletronicos: ["Celulares", "Notebooks", "TVs", "Acessórios", "Outros"],
+  eletronicos: ["Celulares", "Notebooks", "TVs", "Acessórios"],
   jogos: ["PlayStation", "Xbox", "Nintendo", "PC"],
   farmacia: ["Medicamentos", "Vitaminas", "Higiene", "Bebé"],
   brinquedos: ["Jogos de Tabuleiro", "Bonecos e Figuras", "Educativos", "Pelúcias"],
   casa: ["Móveis", "Decoração", "Cozinha", "Cama, Mesa e Banho"],
-  default: ["Novidades", "Promoções", "Mais Vendidos", "Outros"],
+  default: ["Novidades", "Promoções", "Mais Vendidos"],
 };
+
+const FILTRO_TODOS = "Outros";
+
+// Filtros de subcategoria de uma seção, sempre terminando com "Outros"
+export function getFiltrosCategoria(categoria: string): string[] {
+  return [...(opcoesFiltros[categoria.toLowerCase()] || opcoesFiltros.default), FILTRO_TODOS];
+}
 
 const opcoesOrdenacao = [
   { rotulo: "ordenar por", valor: "" },
@@ -39,8 +47,7 @@ export default function FiltrosCategoria({
   ordenacao,
   onSelecionarOrdenacao,
 }: FiltrosCategoriaProps) {
-  const chave = categoria.toLowerCase();
-  const filtros = opcoesFiltros[chave] || opcoesFiltros.default;
+  const filtros = getFiltrosCategoria(categoria);
 
   return (
     <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

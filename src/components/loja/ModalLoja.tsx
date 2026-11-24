@@ -107,15 +107,16 @@ export default function ModalLoja({ loja, onSalva, onDeletada, onFechar }: Props
   useEffect(() => {
     getCategorias({ raiz: true })
       .then((dados) => {
-        // Filtra apenas as categorias padrão que estão predefinidas no frontend
-        const nomesValidos = new Set(categoriasPadrao.map((c) => c.nome.toLowerCase()));
-        const filtradas = dados.filter((c) => nomesValidos.has(c.nome.toLowerCase()));
+        // Compara sem acento: no banco é "Eletronicos"/"Farmacia", no front "Eletrônicos"/"Farmácia"
+        const normalizar = (texto: string) =>
+          texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        const ordemMap = new Map(categoriasPadrao.map((c, i) => [normalizar(c.nome), i]));
 
-        // Ordena exatamente na ordem predefinida no frontend
-        const ordemMap = new Map(categoriasPadrao.map((c, i) => [c.nome.toLowerCase(), i]));
-        filtradas.sort(
-          (a, b) => (ordemMap.get(a.nome.toLowerCase()) ?? 99) - (ordemMap.get(b.nome.toLowerCase()) ?? 99)
-        );
+        // Mantém só as categorias padrão do front, na mesma ordem e com o nome acentuado dele
+        const filtradas = dados
+          .filter((c) => ordemMap.has(normalizar(c.nome)))
+          .sort((a, b) => ordemMap.get(normalizar(a.nome))! - ordemMap.get(normalizar(b.nome))!)
+          .map((c) => ({ ...c, nome: categoriasPadrao[ordemMap.get(normalizar(c.nome))!].nome }));
 
         setCategorias(filtradas);
       })
