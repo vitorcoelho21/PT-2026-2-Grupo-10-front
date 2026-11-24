@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
-import { ChevronLeft, Mail, User } from "lucide-react";
+import { ChevronLeft, Mail, Pencil, User } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import ModaisConta from "@/components/perfil/ModaisConta";
@@ -146,7 +147,18 @@ export default function PerfilUsuario({ id }: { id?: number }) {
 
         {usuario && (
           <section className="mt-12">
-            <h2 className="mb-6 text-2xl font-bold text-black">Produtos</h2>
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <h2 className="text-2xl font-bold text-black">Produtos</h2>
+              {ehMeuPerfil && (
+                <Link
+                  href="/meus-produtos"
+                  className="flex items-center gap-2 rounded-full bg-[#6A38F3] px-5 py-2 text-sm font-medium text-white shadow-md transition hover:bg-[#7B4FF5]"
+                >
+                  <Pencil className="h-4 w-4" />
+                  Editar produtos
+                </Link>
+              )}
+            </div>
 
             {erroProdutos && (
               <p className="w-fit rounded-xl bg-red-500/10 px-4 py-2 text-sm text-red-600">{erroProdutos}</p>
